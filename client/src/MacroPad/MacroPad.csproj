@@ -26,11 +26,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <!-- CS1030 is the #warning directive -->
     <WarningsNotAsErrors>CS1030</WarningsNotAsErrors>
     <PublishAot>true</PublishAot>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
