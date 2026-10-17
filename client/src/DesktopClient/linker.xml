@@ -1,0 +1,7 @@
+<linker>
+  <assembly fullname="Avalonia.Controls">
+    <type fullname="Avalonia.Controls.Window">
+      <event name="Opened" />
+    </type>
+  </assembly>
+</linker>

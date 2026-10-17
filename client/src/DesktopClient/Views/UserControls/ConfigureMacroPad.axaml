@@ -1,0 +1,146 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dd="using:ModuloFivePadClient.DesktopClient.DesignArtifacts"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ModuloFivePadClient.DesktopClient.ViewModels"
+             xmlns:converters="using:ModuloFivePadClient.DesktopClient.ValueConverters"
+             mc:Ignorable="d"
+             d:DesignWidth="1000"
+             d:DesignHeight="450"
+             d:DataContext="{x:Static dd:DesignData.ConfigureExistingMacroPadViewModel}"
+             x:Class="ModuloFivePadClient.DesktopClient.Views.UserControls.ConfigureMacroPad"
+             x:DataType="vm:KnownMacroPadViewModel"
+             x:Name="root"
+             >
+  <UserControl.Resources>
+    <converters:EnumDisplayConverter x:Key="switchModeDisplayConverter" x:TypeArguments="vm:SwitchMode" />
+  </UserControl.Resources>
+  <Border CornerRadius="30" BorderBrush="DarkGoldenrod" BorderThickness="2" Margin="50 50 50 50" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+    <StackPanel Orientation="Vertical" Margin="60 30" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+      <Border BorderBrush="DarkGoldenrod" BorderThickness="0 0 0 4" Padding="8 8 8 0">
+        <Grid ColumnDefinitions="*,*">
+          <TextBlock VerticalAlignment="Bottom" Grid.Column="0" FontWeight="DemiBold" FontSize="18">Configure New Macro Pad</TextBlock>
+          <ToggleButton IsChecked="false" x:Name="toggleHelpButton" HorizontalAlignment="Right" Grid.Column="1" FontSize="10" Margin="0 0 0 5">Help</ToggleButton>
+        </Grid>
+      </Border>
+
+      <Border IsVisible="{Binding #toggleHelpButton.IsChecked}" Margin="0 0 0 0" BorderThickness="0 0 0 4" Padding="8 8 8 0">
+        <StackPanel>
+          <TextBlock x:Name="HelpForNewMacroPad" IsVisible="True" TextWrapping="Wrap">Provide a name for the macro pad. Once that's done, activate all the physical switches connected to your macro pad to add them to the switch list. You can then name the individual switches and change each switch's mode of function.</TextBlock>
+          <TextBlock IsVisible="False" TextWrapping="Wrap">The macro pad can be renamed. It is recommended you add any new switches by toggling the physical switch, but you can also name a switch in advance of identifying it physically.</TextBlock>
+        </StackPanel>
+      </Border>
+      <Border Margin="0 0 0 0" BorderThickness="0 0 0 4" Padding="8 8 8 0">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock VerticalAlignment="Center" Margin="5 0">Macro Pad Name:</TextBlock>
+          <TextBox Width="150" Margin="5 0" Text="{Binding Nickname}" />
+        </StackPanel>
+      </Border>
+
+      <Grid RowDefinitions="*,*,*" ColumnDefinitions="2*" Margin="0 0 0 0">
+        <StackPanel Grid.Column="0" Grid.Row="1" >
+          <Border Margin="4 0 4 0" Padding="8 8 8 0" BorderThickness="0 0 0 2" BorderBrush="DarkGoldenrod">
+            <TextBlock FontSize="14">Switches:</TextBlock>
+          </Border>
+          <StackPanel>
+            <StackPanel Margin="12 0 0 0" Grid.IsSharedSizeScope="True">
+              <Grid>
+                <Grid.Styles>
+                  <Style Selector="TextBlock">
+                    <Setter Property="Margin" Value="4" />
+                    <Setter Property="TextDecorations" Value="Underline" />
+                  </Style>
+                </Grid.Styles>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition SharedSizeGroup="A" />
+                  <ColumnDefinition SharedSizeGroup="B" />
+                  <ColumnDefinition SharedSizeGroup="C" />
+                  <ColumnDefinition SharedSizeGroup="D" />
+                  <ColumnDefinition SharedSizeGroup="E" />
+                  <ColumnDefinition SharedSizeGroup="F" />
+                  <ColumnDefinition SharedSizeGroup="G" />
+                </Grid.ColumnDefinitions>
+                <TextBlock VerticalAlignment="Center" Text="Num." Grid.Column="0" />
+                <TextBlock VerticalAlignment="Center" Text="Name" Grid.Column="1" />
+                <TextBlock VerticalAlignment="Center" Text="Mode" Grid.Column="2" />
+                <TextBlock VerticalAlignment="Center" Text="Physical State" Grid.Column="3" />
+                <TextBlock VerticalAlignment="Center" Text="Logical State" Grid.Column="4" />
+                <TextBlock VerticalAlignment="Center" Text="Reassign" Grid.Column="5" />
+                <TextBlock VerticalAlignment="Center" Text="Remove" Grid.Column="6" />
+              </Grid>
+              <ItemsControl x:Name="SwitchItemsControl" ItemsSource="{Binding Switches}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <Grid HorizontalAlignment="Stretch">
+
+                      <Grid.Styles>
+                        <Style Selector="TextBlock">
+                          <Setter Property="Padding" Value="4" />
+                          <Setter Property="Margin" Value="4" />
+                        </Style>
+                      </Grid.Styles>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition SharedSizeGroup="A" />
+                        <ColumnDefinition SharedSizeGroup="B" />
+                        <ColumnDefinition SharedSizeGroup="C" />
+                        <ColumnDefinition SharedSizeGroup="D" />
+                        <ColumnDefinition SharedSizeGroup="E" />
+                        <ColumnDefinition SharedSizeGroup="F" />
+                        <ColumnDefinition SharedSizeGroup="G" />
+                      </Grid.ColumnDefinitions>
+
+                      <TextBlock
+                        VerticalAlignment="Center"
+                        Text="{Binding SwitchNumberOneBased}"
+                        Grid.Column="0"
+                        />
+
+                      <TextBox
+                        Height="40"
+                        Width="125"
+                        VerticalAlignment="Center"
+                        Margin="5 5"
+                        Text="{Binding Nickname}"
+                        Padding="9 9 0 0"
+                        Grid.Column="1" />
+                      
+                      <!--
+                        - This seems like a pretty neat way of using an enum
+                        - for a combo box while using the Display attribute.
+                        - If native AOT compilation weren't being used, the
+                        - generic type argumetn wouldn't even be needed!
+                        -->
+                      <ComboBox
+                        Padding="4 -2 0 0"
+                        SelectedItem="{Binding SwitchMode, Converter={StaticResource switchModeDisplayConverter}}"
+                        Initialized="SwitchModeComboBox_Initialized"
+                        Height="40"
+                        Margin="5 5"
+                        ItemsSource="{Binding Source={x:Static vm:EnumSources.SwitchModes}, Converter={StaticResource switchModeDisplayConverter}}"
+                        Grid.Column="2">
+                      </ComboBox>
+                      <TextBlock VerticalAlignment="Center" Text="{Binding PhysicalState, Converter={StaticResource switchModeDisplayConverter}}" Grid.Column="3" />
+                      <TextBlock VerticalAlignment="Center" Text="{Binding LogicalState, Converter={StaticResource switchModeDisplayConverter}}" Grid.Column="4" />
+                      <Button Margin="5" Grid.Column="5">Reassign</Button>
+                      <Button Margin="5" Grid.Column="6">Remove</Button>
+                    </Grid>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </StackPanel>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center">
+          <!--
+          -
+          - HOW DO I MAKE THIS ORDER PLATFORM-SPECIFIC????
+          -
+          -->
+          <Button Width="100" Margin="20" DataContext="{Binding #root}" Command="{Binding Command}" CommandParameter="{x:True}"><TextBlock HorizontalAlignment="Center">OK</TextBlock></Button>
+          <Button Width="100" Margin="20" DataContext="{Binding #root}" Command="{Binding Command}" CommandParameter="{x:False}"><TextBlock HorizontalAlignment="Center">Cancel</TextBlock></Button>
+        </StackPanel>
+      </Grid>
+    </StackPanel>
+  </Border>
+</UserControl>

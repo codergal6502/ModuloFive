@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="ModuloFivePadClient.DesktopClient.Views.UserControls.Welcome">
+  <StackPanel>
+    <TextBlock TextWrapping="Wrap" FontSize="24" Margin="8 16">
+      Welcome to the Modulo Five Macro Pad. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec nec lectus tellus. Vivamus ac ultrices ligula.
+    </TextBlock>
+    <TextBlock TextWrapping="Wrap" FontSize="24" Margin="8 16">
+      Menu is on the left. Fusce maximus tempus rutrum. Nunc sollicitudin pulvinar orci ut auctor. Donec fringilla, ipsum eget facilisis iaculis, sem risus efficitur leo, id posuere libero libero sit amet lectus.
+    </TextBlock>
+    <TextBlock TextWrapping="Wrap" FontSize="24" Margin="8 16">
+      <Run>There's a </Run>
+      <Run FontWeight="DemiBold" >Help</Run>
+      <Run>button in the corner should you need guidance. In nec lorem urna. Suspendisse dictum lobortis ex, vitae condimentum enim efficitur tristique. Quisque dui lorem, ullamcorper quis odio eu, varius semper neque.</Run>
+    </TextBlock>
+  </StackPanel>
+</UserControl>

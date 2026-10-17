@@ -1,0 +1,220 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dd="using:ModuloFivePadClient.DesktopClient.DesignArtifacts"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:UserControls="using:ModuloFivePadClient.DesktopClient.Views.UserControls"
+             xmlns:vm="using:ModuloFivePadClient.DesktopClient.ViewModels"
+             xmlns:converters="using:ModuloFivePadClient.DesktopClient.ValueConverters"
+             mc:Ignorable="d"
+             d:DesignWidth="1200"
+             d:DesignHeight="475"
+             d:DataContext="{x:Static dd:DesignData.MacroPadListViewModel}"
+             x:Class="ModuloFivePadClient.DesktopClient.Views.UserControls.MacroPadList"
+             x:DataType="vm:MacroPadListViewModel">
+  <UserControl.Resources>
+    <converters:EnumDisplayConverter x:Key="modeDisplayConverter" x:TypeArguments="vm:SwitchMode" />
+    <converters:EnumDisplayConverter x:Key="switchStateDisplayConverter" x:TypeArguments="vm:SwitchState" />
+  </UserControl.Resources>
+  <Grid RowDefinitions="*" ColumnDefinitions="3*,2*">
+    <StackPanel IsEnabled="{Binding !IsAnyModalOpen}" Grid.Column="0" Grid.Row="0">
+      <Border Margin="0 0 50 0" BorderBrush="DarkGoldenrod" BorderThickness="0 0 0 4" Padding="8 8 8 0">
+        <Grid ColumnDefinitions="*,*">
+          <TextBlock HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="0" FontWeight="DemiBold" FontSize="18">Configured Macro Pads</TextBlock>
+          <Button
+            Command="{Binding ConfigureKnownMacroPad}"
+            FontSize="12"
+            Padding="4"
+            Margin="0 0 0 1"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Grid.Column="1">Add Macro Pad</Button>
+        </Grid>
+      </Border>
+      <TextBlock IsVisible="{Binding !KnownMacroPads.Count}" Margin="16 4" FontStyle="Italic">No macro pads have been configured.</TextBlock>
+      <Border Margin="0 0 0 0" Padding="8">
+        <ItemsRepeater ItemsSource="{Binding KnownMacroPads}">
+          <ItemsRepeater.ItemTemplate>
+            <DataTemplate>
+              <StackPanel Orientation="Vertical">
+                <Border Margin="0 0 50 0" BorderBrush="DarkGoldenrod" BorderThickness="0 0 0 2" Padding="8 8 8 0">
+                  <Grid RowDefinitions="*" ColumnDefinitions="*,*">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                      <TextBlock FontWeight="DemiBold" FontSize="16" Text="{Binding Nickname}" />
+                      <TextBlock Foreground="Green" IsVisible="{Binding IsOnline}" Margin="4 0 0 1" FontSize="10" VerticalAlignment="Bottom" Text="Online" />
+                      <TextBlock Foreground="Red" IsVisible="{Binding !IsOnline}" Margin="4 0 0 1" FontSize="10" VerticalAlignment="Bottom" Text="Offline" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" FontSize="10" Text="{Binding SerialId}" VerticalAlignment="Bottom" HorizontalAlignment="Right"></TextBlock>
+                  </Grid>
+                </Border>
+                <Grid RowDefinitions="*,*" ColumnDefinitions="2*" Margin="0 0 50 0">
+                  <StackPanel Grid.Column="0" Grid.Row="1" >
+                    <Border Margin="4 0 50 0" Padding="8 8 8 0" BorderThickness="0 0 0 2" BorderBrush="DarkGoldenrod">
+                      <TextBlock FontSize="14">Switches:</TextBlock>
+                    </Border>
+                    <StackPanel>
+                      <StackPanel Margin="12 0 0 0" Grid.IsSharedSizeScope="True">
+                        <Grid>
+                          <Grid.Styles>
+                            <Style Selector="TextBlock">
+                              <Setter Property="Padding" Value="4" />
+                              <Setter Property="TextDecorations" Value="Underline" />
+                            </Style>
+                          </Grid.Styles>
+                          <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="A" />
+                            <ColumnDefinition SharedSizeGroup="B" />
+                            <ColumnDefinition SharedSizeGroup="C" />
+                            <ColumnDefinition SharedSizeGroup="D" />
+                            <ColumnDefinition SharedSizeGroup="E" />
+                          </Grid.ColumnDefinitions>
+                          <TextBlock Text="No." Grid.Column="0" />
+                          <TextBlock Text="Name" Grid.Column="1" />
+                          <TextBlock Text="Mode" Grid.Column="2" />
+                          <TextBlock IsVisible="{Binding IsOnline}" Text="Physical State" Grid.Column="3" />
+                          <TextBlock IsVisible="{Binding IsOnline}" Text="Logical State" Grid.Column="4" />
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding Switches}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                              <Grid HorizontalAlignment="Stretch">
+                                <Grid.Styles>
+                                  <Style Selector="TextBlock">
+                                    <Setter Property="Padding" Value="4" />
+                                  </Style>
+                                </Grid.Styles>
+                                <Grid.ColumnDefinitions>
+                                  <ColumnDefinition SharedSizeGroup="A" />
+                                  <ColumnDefinition SharedSizeGroup="B" />
+                                  <ColumnDefinition SharedSizeGroup="C" />
+                                  <ColumnDefinition SharedSizeGroup="D" />
+                                  <ColumnDefinition SharedSizeGroup="E" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{Binding SwitchNumberOneBased}" Grid.Column="0" />
+                                <TextBlock Text="{Binding Nickname}" Grid.Column="1" />
+                                <TextBlock Text="{Binding SwitchMode, Converter={StaticResource modeDisplayConverter}}" Grid.Column="2" />
+                                <TextBlock IsVisible="{Binding $parent[StackPanel].DataContext.IsOnline}" Text="{Binding PhysicalState, Converter={StaticResource switchStateDisplayConverter}}" Grid.Column="3" />
+                                <TextBlock IsVisible="{Binding $parent[StackPanel].DataContext.IsOnline}" Text="{Binding LogicalState, Converter={StaticResource switchStateDisplayConverter}}" Grid.Column="4" />
+                              </Grid>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </StackPanel>
+                    </StackPanel>
+                  </StackPanel>
+                </Grid>
+                <StackPanel Margin="0 0 50 0"  Grid.Column="1" Grid.Row="1" Orientation="Horizontal" >
+                  <Button
+                    Command="{Binding $parent[UserControl].DataContext.ConfigureKnownMacroPad}"
+                    CommandParameter="{Binding .}"
+                    Margin="8 8 8 8"
+                    FontSize="12"
+                    Padding="8 4"
+                    HorizontalAlignment="Stretch"
+                    >
+                    Configure
+                  </Button>
+                  <Button
+                    IsVisible="{Binding !IsOnline}"
+                    Margin="8 8 8 8"
+                    FontSize="12"
+                    Padding="8 4"
+                    HorizontalAlignment="Stretch">
+                    Delete Configuration
+                  </Button>
+                  <!-- <Button
+                  IsVisible="{Binding IsOnline}"
+                  Margin="8 8 8 8"
+                  FontSize="12"
+                  Padding="8 4"
+                  HorizontalAlignment="Stretch">
+                  <TextBlock HorizontalAlignment="Center">Take Offline</TextBlock>
+                  </Button> -->
+                </StackPanel>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
+      </Border>
+    </StackPanel>
+    <StackPanel IsEnabled="{Binding !IsAnyModalOpen}" Grid.Column="1" Grid.Row="0">
+
+      <Border Margin="0 0 50 0" BorderBrush="DarkGoldenrod" BorderThickness="0 0 0 4" Padding="8 8 8 0">
+        <Grid ColumnDefinitions="*,auto">
+          <TextBlock HorizontalAlignment="Left" VerticalAlignment="Bottom" Grid.Column="0" FontWeight="DemiBold" FontSize="18">Discovered Macro Pads</TextBlock>
+          <Button
+            Command="{Binding RescanMacroPads}"
+            FontSize="12"
+            Padding="4"
+            Margin="0 0 0 1"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Grid.Column="1">Rescan</Button>
+        </Grid>
+      </Border>
+      <TextBlock Margin="8" IsVisible="{Binding !DiscoveredMacroPads.Count}">All connected macro pads have been configured!</TextBlock>
+      <Border Margin="0 0 0 0" Padding="8">
+        <ItemsRepeater ItemsSource="{Binding DiscoveredMacroPads}">
+          <ItemsRepeater.ItemTemplate>
+            <DataTemplate>
+              <StackPanel>
+                <Border Margin="0 0 50 0" BorderBrush="DarkGoldenrod" BorderThickness="0 0 0 2" Padding="8 8 8 0">
+                  <TextBlock FontWeight="DemiBold" FontSize="12" Text="{Binding SerialId}" />
+                </Border>
+                <Grid RowDefinitions="*,*" ColumnDefinitions="*,*" Margin="0 0 50 0">
+                  <Button
+                    Command="{Binding $parent[UserControl].DataContext.AssignMacroPad}"
+                    CommandParameter="{Binding .}"
+                    Margin="8 8 8 8"
+                    FontSize="12"
+                    Padding="8 4"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    HorizontalAlignment="Left">Assign</Button>
+                  <Button
+                    Command="{Binding $parent[UserControl].DataContext.ConfigureDiscoveredMacroPad}"
+                    CommandParameter="{Binding .}"
+                    Margin="8 8 8 8"
+                    FontSize="12"
+                    Padding="8 4"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    HorizontalAlignment="Right">Configure</Button>
+                </Grid>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
+      </Border>
+    </StackPanel>
+    <!-- it'd be really cool to use a patterned background -->
+    <Border x:Name="AssignMacroModal" IsVisible="{Binding IsAssignNewMacroPadModalOpen}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="999" Grid.RowSpan="999" ZIndex="999" Background="rgba(50, 50, 50, .5)">
+      <Border CornerRadius="30" BorderBrush="DarkGoldenrod" BorderThickness="2" Margin="100 50 100 50" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+        <StackPanel Orientation="Vertical" Margin="60 30" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+          <Border Margin="0 0 50 0" BorderBrush="DarkGoldenrod" BorderThickness="0 0 0 4" Padding="8 8 8 0">
+            <TextBlock FontWeight="DemiBold" FontSize="18">Assign New Macro Pad</TextBlock>
+          </Border>
+
+          <Border Margin="0 0 50 0" BorderThickness="0 0 0 4" Padding="8 8 8 0">
+            <TextBlock TextWrapping="Wrap">Select an offline configured macro pad. The selected new macro pad will be assigned the offline macro pad's configuration.</TextBlock>
+          </Border>
+
+          <Border Margin="0 0 50 0" BorderThickness="0 0 0 4" Padding="8 8 8 0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+              <TextBlock>Macro Pad:</TextBlock>
+              <ComboBox Initialized="ComboBox_Initialized" ItemsSource="{Binding OfflineConfiguredMacroPads}"></ComboBox>
+            </StackPanel>
+          </Border>
+
+        </StackPanel>
+      </Border>
+
+
+    </Border>
+
+    <!-- it'd be really cool to use a patterned background -->
+    <Border x:Name="NameMacroPadModal" IsVisible="{Binding IsNameMacroPadModalOpen}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="999" Grid.RowSpan="999" ZIndex="999" Background="rgba(50, 50, 50, .5)">
+      <UserControls:ConfigureMacroPad DataContext="{Binding ConfigurationModalMacroPad}" Command="{Binding $parent[UserControl].DataContext.HandleConfigOkayCancel}" />
+    </Border>
+  </Grid>
+</UserControl>

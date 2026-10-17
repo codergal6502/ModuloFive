@@ -1,0 +1,125 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dd="using:ModuloFivePadClient.DesktopClient.DesignArtifacts"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:UserControls="using:ModuloFivePadClient.DesktopClient.Views.UserControls"
+             xmlns:vm="using:ModuloFivePadClient.DesktopClient.ViewModels"
+             xmlns:converters="using:ModuloFivePadClient.DesktopClient.ValueConverters"
+             mc:Ignorable="d"
+             d:DesignWidth="1000"
+             d:DesignHeight="450"
+             d:DataContext="{x:Static dd:DesignData.LinkageListViewModel}"
+             x:Class="ModuloFivePadClient.DesktopClient.Views.UserControls.LinkageList"
+             x:DataType="vm:LinkageListViewModel"
+             x:Name="root"
+             >
+  <UserControl.Resources>
+    <converters:EqualsValueConverter x:Key="equalsValueConverter" />
+  </UserControl.Resources>
+  <Grid ColumnDefinitions="*" RowDefinitions="*">
+    <StackPanel IsVisible="{Binding !IsModalOpen}" Orientation="Vertical">
+      <Border Margin="0 0 50 0" BorderBrush="DarkGoldenrod" BorderThickness="0 0 0 4" Padding="8 8 8 0">
+        <Grid ColumnDefinitions="*,*">
+          <TextBlock VerticalAlignment="Center" Grid.Column="0" FontWeight="DemiBold" FontSize="18">Linkages</TextBlock>
+          <StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button
+              Command="{Binding AddLinkageCommand}"
+              CommandParameter="{x:Null}"
+              Padding="5 3"
+              Margin="10 0 0 5"
+              FontSize="12"
+              HorizontalAlignment="Right">Add Linkage…</Button>
+            <ToggleButton Padding="5 3" Margin="10 0 0 5" FontSize="12" HorizontalAlignment="Right">Help</ToggleButton>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <StackPanel Grid.IsSharedSizeScope="True">
+        <Grid Margin="10 10 0 0">
+          <Grid.Styles>
+            <Style Selector="TextBlock">
+              <Setter Property="Margin" Value="10 3"/>
+            </Style>
+            <Style Selector="Button">
+              <Setter Property="Margin" Value="10 3"/>
+            </Style>
+          </Grid.Styles>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition SharedSizeGroup="A" />
+            <ColumnDefinition SharedSizeGroup="B" />
+            <ColumnDefinition SharedSizeGroup="C" />
+            <ColumnDefinition SharedSizeGroup="D" />
+            <ColumnDefinition SharedSizeGroup="E" />
+            <ColumnDefinition SharedSizeGroup="F" />
+            <ColumnDefinition SharedSizeGroup="G" />
+          </Grid.ColumnDefinitions>
+          <TextBlock TextDecorations="Underline" Grid.Row="0" Grid.Column="0">Switch</TextBlock>
+          <TextBlock TextDecorations="Underline" Grid.Row="0" Grid.Column="1">Trigger State</TextBlock>
+          <TextBlock TextDecorations="Underline" Grid.Row="0" Grid.Column="2">Bot Action</TextBlock>
+          <TextBlock TextDecorations="Underline" Grid.Row="0" Grid.Column="3">Arguments</TextBlock>
+          <TextBlock IsVisible="{Binding HasErrors}" TextDecorations="Underline" Grid.Row="0" Grid.Column="4">Errors</TextBlock>
+          <TextBlock TextDecorations="Underline" Grid.Row="0" Grid.Column="5">Edit</TextBlock>
+          <TextBlock TextDecorations="Underline" Grid.Row="0" Grid.Column="6">Delete</TextBlock>
+        </Grid>
+        <ItemsControl x:Name="LinkageItemsControl" ItemsSource="{Binding Linkages}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Grid Margin="10 10 0 0">
+                <Grid.Styles>
+                  <Style Selector="TextBlock">
+                    <Setter Property="Margin" Value="10 3"/>
+                  </Style>
+                  <Style Selector="Button">
+                    <Setter Property="Margin" Value="10 3"/>
+                  </Style>
+                </Grid.Styles>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition SharedSizeGroup="A" />
+                  <ColumnDefinition SharedSizeGroup="B" />
+                  <ColumnDefinition SharedSizeGroup="C" />
+                  <ColumnDefinition SharedSizeGroup="D" />
+                  <ColumnDefinition SharedSizeGroup="E" />
+                  <ColumnDefinition SharedSizeGroup="F" />
+                  <ColumnDefinition SharedSizeGroup="G" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0">
+                  <Run Text="{Binding SwitchName}" /> <Run FontSize="10" FontStyle="Italic">(Foot Pedals)</Run>
+                </TextBlock>
+
+                <TextBlock Text="{Binding TriggerState}" Grid.Column="1"></TextBlock>
+                <!-- <TextBlock IsVisible="{Binding TriggerState, Converter={StaticResource equalsValueConverter}, ConverterParameter={x:Static vm:SwitchState.Changed }}" Grid.Column="1">Turns <Run FontWeight="Bold">Off</Run></TextBlock> -->
+                <!-- <TextBlock IsVisible="{Binding TriggerState, Converter={StaticResource equalsValueConverter}, ConverterParameter={x:Static vm:SwitchState.Off }}" Grid.Column="1">Turns <Run FontWeight="Bold">Off</Run></TextBlock> -->
+                <!-- <TextBlock IsVisible="{Binding TriggerState, Converter={StaticResource equalsValueConverter}, ConverterParameter={x:Static vm:SwitchState.On }}" Grid.Column="1">Turns <Run FontWeight="Bold">On</Run></TextBlock> -->
+
+                <TextBlock Grid.Column="2">Recap Timestamp <Run FontSize="10" FontStyle="Italic">(Firebot)</Run></TextBlock>
+                <TextBlock IsVisible="{Binding !Arguments.Count}" FontStyle="Italic" Grid.Column="3">none</TextBlock>
+
+                <ItemsControl IsVisible="{Binding !!Arguments.Count}" ItemsSource="{Binding Arguments}" Grid.Row="2" Grid.Column="3">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock><Run Text="{Binding Name}"/> <Run>=</Run> <Run Text="{Binding Value}"></Run></TextBlock>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <TextBlock IsVisible="{Binding HasErrors}" Grid.Column="4">Oh, No!</TextBlock>
+                <Button
+                  IsVisible="{Binding !HasErrors}"
+                  Grid.Column="5"
+                  Command="{Binding $parent[UserControl].DataContext.AddLinkageCommand}"
+                  CommandParameter="{Binding}"
+                  >Edit</Button>
+                <Button Grid.Column="6">Delete</Button>
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </StackPanel>
+    <!-- it'd be really cool to use a patterned background -->
+    <Border x:Name="NameMacroPadModal" IsVisible="{Binding IsModalOpen}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="999" Grid.RowSpan="999" ZIndex="999" Background="rgba(50, 50, 50, .5)">
+      <UserControls:ConfigureLinkage DataContext="{Binding ConfigureLinkage}" Command="{Binding $parent[UserControl].DataContext.HandleConfigOkayCancel}" />
+    </Border>
+  </Grid>
+</UserControl>

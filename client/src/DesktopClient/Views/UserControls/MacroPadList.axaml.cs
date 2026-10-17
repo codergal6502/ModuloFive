@@ -1,0 +1,18 @@
+using Avalonia.Controls;
+using ModuloFivePadClient.DesktopClient.Models;
+
+namespace ModuloFivePadClient.DesktopClient.Views.UserControls
+{
+    public partial class MacroPadList : UserControl
+    {
+        public MacroPadList()
+        {
+            InitializeComponent();
+        }
+
+        private void ComboBox_Initialized(object? sender, System.EventArgs e)
+        {
+            ControlUtilities.AutoSizeComboBox(sender);
+        }
+    }
+}

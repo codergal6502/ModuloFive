@@ -1,0 +1,150 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dd="using:ModuloFivePadClient.DesktopClient.DesignArtifacts"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ModuloFivePadClient.DesktopClient.ViewModels"
+             xmlns:converters="using:ModuloFivePadClient.DesktopClient.ValueConverters"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="650"
+             d:DataContext="{x:Static dd:DesignData.DesignTimeConfigureLinkageViewModel}"
+             x:Class="ModuloFivePadClient.DesktopClient.Views.UserControls.ConfigureLinkage"
+             x:DataType="vm:ConfigureLinkageViewModel"
+             x:Name="root"
+             >
+  <UserControl.Resources>
+    <converters:EnumDisplayConverter x:Key="switchStateDisplayConverter" x:TypeArguments="vm:SwitchState" />
+    <converters:IsEmptyOrWhitespace x:Key="isEmptyOrWhitespace" />
+  </UserControl.Resources>
+  <Border CornerRadius="30" BorderBrush="DarkGoldenrod" BorderThickness="2" Margin="50 50 50 50" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+    <StackPanel Orientation="Vertical" Margin="60 15" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+      <Border BorderBrush="DarkGoldenrod" BorderThickness="0 0 0 4" Padding="8 8 8 0">
+        <Grid ColumnDefinitions="*,*">
+          <TextBlock VerticalAlignment="Bottom" Grid.Column="0" FontWeight="DemiBold" FontSize="18">Configure Linkage</TextBlock>
+          <ToggleButton IsChecked="false" x:Name="toggleHelpButton" HorizontalAlignment="Right" Grid.Column="1" FontSize="10" Margin="0 0 0 5">Help</ToggleButton>
+        </Grid>
+      </Border>
+
+      <Border IsVisible="{Binding #toggleHelpButton.IsChecked}" Margin="0 0 0 0" BorderThickness="0 0 0 4" Padding="8 8 8 0">
+        <StackPanel>
+          <TextBlock x:Name="HelpForNewMacroPad" IsVisible="True" TextWrapping="Wrap">Provide a name for the macro pad. Once that's done, activate all the physical switches connected to your macro pad to add them to the switch list. You can then name the individual switches and change each switch's mode of function.</TextBlock>
+          <TextBlock IsVisible="False" TextWrapping="Wrap">The macro pad can be renamed. It is recommended you add any new switches by toggling the physical switch, but you can also name a switch in advance of identifying it physically.</TextBlock>
+        </StackPanel>
+      </Border>
+
+      <StackPanel>
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="4 0 4 0" Padding="8 8 8 0" BorderThickness="0 0 0 2" BorderBrush="DarkGoldenrod">
+          <TextBlock FontSize="14">Switch Settings:</TextBlock>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" Margin="8 8">
+          <StackPanel.Styles>
+            <Style Selector="StackPanel">
+              <Setter Property="Margin" Value="8 0" />
+            </Style>
+          </StackPanel.Styles>
+          <StackPanel>
+            <TextBlock>Macro Pad:</TextBlock>
+            <ComboBox MinWidth="150" Initialized="SwitchPadChoiceComboBox_Initialized" ItemsSource="{Binding MacroPadChoices}" SelectedValue="{Binding SelectedMacroPad}">
+              <ComboBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Nickname}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </StackPanel>
+          <StackPanel>
+            <TextBlock>Switch:</TextBlock>
+            <ComboBox MinWidth="150" ItemsSource="{Binding SwitchChoices}" SelectedValue="{Binding SelectedSwitch}">
+              <ComboBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Nickname}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </StackPanel>
+          <StackPanel>
+            <TextBlock>Trigger:</TextBlock>
+            <ComboBox
+              MinWidth="150"
+              ItemsSource="{Binding SwitchStateChoices, Converter={StaticResource switchStateDisplayConverter}, ConverterParameter=ref ref}"
+              SelectedItem="{Binding SelectedSwitchState, Converter={StaticResource switchStateDisplayConverter}, ConverterParameter=foo foo}" />
+          </StackPanel>
+        </StackPanel>
+
+
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Margin="4 0 4 0" Padding="8 8 8 0" BorderThickness="0 0 0 2" BorderBrush="DarkGoldenrod">
+          <TextBlock FontSize="14">Bot Action Settings:</TextBlock>
+        </Border>
+
+        <StackPanel Orientation="Horizontal" Margin="8 8">
+          <StackPanel.Styles>
+            <Style Selector="StackPanel">
+              <Setter Property="Margin" Value="8 0" />
+            </Style>
+          </StackPanel.Styles>
+          <StackPanel Grid.Row="3" Grid.Column="0">
+            <TextBlock>Bot:</TextBlock>
+            <ComboBox MinWidth="150" Initialized="BotChoiceComboBox_Initialized" ItemsSource="{Binding BotChoices}" SelectedValue="{Binding SelectedBot}">
+              <ComboBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </StackPanel>
+          <StackPanel Grid.Row="3" Grid.Column="1">
+            <TextBlock>Action:</TextBlock>
+            <ComboBox MinWidth="150" Initialized="BotActionChoiceComboBox_Initialized" ItemsSource="{Binding BotActionChoices}" SelectedValue="{Binding SelectedBotAction}">
+              <ComboBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+          </StackPanel>
+        </StackPanel>
+
+      </StackPanel>
+
+      <StackPanel IsVisible="{Binding SelectedBotAction?.Name, Converter={StaticResource isEmptyOrWhitespace}, ConverterParameter=invert}">
+        <Border Margin="4 0 4 0" Padding="8 8 8 0" BorderThickness="0 0 0 2" BorderBrush="DarkGoldenrod">
+          <TextBlock FontSize="14">Bot Action Arguments:</TextBlock>
+        </Border>
+        <TextBlock Margin="24 4 0 0" IsVisible="{Binding !Arguments.Count}" FontSize="12" FontStyle="Italic">Action <Run Text="{Binding SelectedBotAction?.Name}"/> does not take any arguments.</TextBlock>
+
+        <ItemsControl IsVisible="{Binding !!Arguments.Count}" ItemsSource="{Binding Arguments}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel/>
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.Styles>
+            <Style Selector="StackPanel">
+              <Setter Property="Margin" Value="16 8" />
+            </Style>
+          </ItemsControl.Styles>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <StackPanel>
+                <TextBlock><Run Text="{Binding Name}" />:</TextBlock>
+                <TextBox Width="100" Text="{Binding Value}"></TextBox>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <!--
+        -
+        - HOW DO I MAKE THIS ORDER PLATFORM-SPECIFIC????
+        -
+        -->
+        <Button Width="100" Margin="20" DataContext="{Binding #root}" Command="{Binding Command}" CommandParameter="{x:True}"><TextBlock HorizontalAlignment="Center">OK</TextBlock></Button>
+        <Button Width="100" Margin="20" DataContext="{Binding #root}" Command="{Binding Command}" CommandParameter="{x:False}"><TextBlock HorizontalAlignment="Center">Cancel</TextBlock></Button>
+      </StackPanel>
+    </StackPanel>
+  </Border>
+</UserControl>
