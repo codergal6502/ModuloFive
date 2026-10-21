@@ -65,8 +65,6 @@ namespace ModuloFivePadClient.BotConnections.Http
                     throw new BotConnectionConfigurationException($"Status list relative URL {cfg.BaseUri}.", ex);
                 }
 
-
-
                 if (string.IsNullOrWhiteSpace(cfg.ActionListRelativeUrl))
                 {
                     throw new BotConnectionConfigurationException($"Action list relative is was empty.");
@@ -211,6 +209,8 @@ namespace ModuloFivePadClient.BotConnections.Http
 
             public async Task<IList<BotAction>> GetBotActionListsAsync()
             {
+                _logger.LogDebug("In {class}.{func}.", nameof(BotConnectionImpl), nameof(GetBotActionListsAsync));
+
                 try
                 {
                     var responseMessage = await this._httpClient.GetStreamAsync(_actionListPath);
@@ -224,6 +224,13 @@ namespace ModuloFivePadClient.BotConnections.Http
                             BotActionJsonContext.Default.BotActionArray) ?? [];
 
                     OnActionListRetrieved?.Invoke(this, BotActions);
+
+                    _logger.LogDebug(
+                        "In {class}.{func}, retrieved {number} bot actions.",
+                        nameof(BotConnectionImpl),
+                        nameof(GetBotActionListsAsync),
+                        BotActions.Count
+                    );
                 }
                 catch (Exception ex) when (ex is InvalidOperationException || ex is UriFormatException)
                 {
@@ -272,11 +279,18 @@ namespace ModuloFivePadClient.BotConnections.Http
 
                     if (responseMessage.IsSuccessStatusCode)
                     {
-
+                        _logger.LogDebug("In {class}.{func}, action suceeded.", nameof(BotConnectionImpl), nameof(InvokeActionAsync));
                         this.ActionSuceeded?.Invoke(this);
                     }
                     else
                     {
+                        _logger.LogDebug(
+                            "In {class}.{func}, action failed {code} with reason {reason}.",
+                            nameof(BotConnectionImpl),
+                            nameof(InvokeActionAsync),
+                            responseMessage.StatusCode,
+                            responseMessage.ReasonPhrase
+                        );
                         this.ActionFailed?.Invoke(this, new HttpActionFailureReason(responseMessage));
                     }
                 }

@@ -44,10 +44,10 @@ namespace ModuloFivePadClient.RunnerCore
 
         private void SwitchStateChanged(IMacroPadConnection macroPad, LogicalSwitchStateChangedArgs args)
         {
-            _logger.LogDebug("In {class}.{func}.", nameof(Runner), nameof(SwitchStateChanged));
+            _logger.LogDebug("In {class}.{func} with {linkageCount} linkages.", nameof(Runner), nameof(SwitchStateChanged), _runnerLinkages.Count);
             if (!args.LogicalSwitchStateChanged)
             {
-                _logger.LogDebug("In {LogicalSwitchStateChanged} did not change.", nameof(args.LogicalSwitchStateChanged));
+                _logger.LogDebug("{LogicalSwitchStateChanged} did not change.", nameof(args.LogicalSwitchStateChanged));
                 return;
             }
             lock (this._lockObject)
@@ -58,6 +58,8 @@ namespace ModuloFivePadClient.RunnerCore
                     doRun |= linkage.TriggerState == SwitchState.Changed;
                     doRun |= linkage.TriggerState == SwitchState.On && args.LogicalSwitchState == SwitchState.On;
                     doRun |= linkage.TriggerState == SwitchState.Off && args.LogicalSwitchState == SwitchState.Off;
+
+                    _logger.LogDebug("{triggerStateName} = {triggerStateValue}; ", nameof(linkage.TriggerState), linkage.TriggerState);
 
                     if (doRun)
                     {
@@ -85,6 +87,15 @@ namespace ModuloFivePadClient.RunnerCore
                                 }
                             }
 
+                            _logger.LogDebug(
+                                "In {class}.{func}, running bot {botName} action {actionName} with arguments {args}.",
+                                nameof(Runner),
+                                nameof(SwitchStateChanged),
+                                linkage.BotName,
+                                linkage.BotActionId,
+                                string.Join(", ", arguments.Select(a => $"{a.Name} = {a.Value}"))
+                                );
+
                             bot.InvokeAction(linkage.BotActionId, arguments);
                             LinkagePerformed?.Invoke(this, new LinkagePerformedArgs(linkage));
                         }
@@ -97,6 +108,7 @@ namespace ModuloFivePadClient.RunnerCore
 
         public void LoadConfiguration(ModuloFiveConfiguration cfg)
         {
+            _logger.LogDebug("In {class}.{LoadConfiguration}, loading configuration.", nameof(Runner), nameof(LoadConfiguration));
             lock (this._lockObject)
             {
                 _runnerLinkages.Clear();
@@ -120,6 +132,16 @@ namespace ModuloFivePadClient.RunnerCore
                                 newLinkage.Arguments.Add(newArgument);
                             }
                         }
+
+                        _logger.LogDebug(
+                            "In {class}.{LoadConfiguration}, loaded linkage bot {botName} action {actionName} with {argCount} arguments {args}.",
+                            nameof(Runner),
+                            nameof(SwitchStateChanged),
+                            cfgLinkage.BotName,
+                            cfgLinkage.BotActionId,
+                            cfgLinkage.Arguments?.Length ?? 0,
+                            string.Join(", ", cfgLinkage?.Arguments?.Select(a => $"{a.Name} = {a.Value}") ?? [])
+                        );
                     }
                 }
             }

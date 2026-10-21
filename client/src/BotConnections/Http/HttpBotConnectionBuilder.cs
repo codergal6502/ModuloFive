@@ -3,8 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 
-
-
 namespace ModuloFivePadClient.BotConnections.Http
 {
     // Native AOT JSON Support 
@@ -64,6 +62,7 @@ namespace ModuloFivePadClient.BotConnections.Http
 
         public async Task<IList<IBotConnection>> BuildAllAsync(CancellationToken? cancellation)
         {
+            _logger.LogDebug("In {class}.{method}, attempting to connect to {botCount} bots.", nameof(HttpBotConnectionBuilder), nameof(BuildAllAsync), _httpActionConnectionConfigurationProvider.Configurations.Count());
             List<IBotConnection> results = [];
 
             foreach (var cfg in _httpActionConnectionConfigurationProvider.Configurations)
@@ -71,6 +70,7 @@ namespace ModuloFivePadClient.BotConnections.Http
                 var impl = new BotConnectionImpl(cfg, _loggerFactory.CreateLogger<BotConnectionImpl>());
                 BotStatus botStatus = await impl.GetStatusAsync();
 
+                _logger.LogDebug("In {class}.{method}, status of {bot} is {status}.", nameof(HttpBotConnectionBuilder), nameof(BuildAllAsync), cfg.Name, botStatus);
                 if (botStatus == BotStatus.Available)
                 {
                     this._activeConnections.Add(impl);

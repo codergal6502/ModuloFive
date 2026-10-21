@@ -13,6 +13,7 @@ using ModuloFivePadClient.Utilities.Extensions.ForEnumerables;
 using ModuloFivePadClient.RunnerCore;
 using System.ComponentModel;
 using System.Xml.Schema;
+using ModuloFivePadClient.Utilities;
 
 namespace ModuloFivePadClient.DesktopClient.Models
 {
@@ -150,6 +151,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
         private void BotConnected(IBotConnectionBuilder sender, IBotConnection botConnection)
         {
+            this._logger.LogDebug("In {class}.{method}, connected to {bot}.", nameof(MainWindowKitchenSinkModel), nameof(BotConnected), botConnection.BotName);
             botConnection.OnActionListRetrieved += BotActionListRetrievedHandler;
             _botConnections.Add(botConnection);
 
@@ -165,6 +167,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
             if (null == existingBot)
             {
+                this._logger.LogDebug("In {class}.{method}, added {bot} as a new view-model {vmType}.", nameof(MainWindowKitchenSinkModel), nameof(AddBotConnectionToBotViewModels), botConnection.BotName, typeof(BotViewModel));
                 botViewModels.Add(new BotViewModel(botConnection));
             }
         }
@@ -176,6 +179,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
             if (null == bot)
             {
+                this._logger.LogDebug("In {class}.{method}, added {bot} as a new view-model {vmType}.", nameof(MainWindowKitchenSinkModel), nameof(AddBotConnectionToBotViewModels), botConnection.BotName, typeof(LinkageBotChoiceViewModel));
                 bot = new LinkageBotChoiceViewModel { Name = botConnection.BotName };
                 botViewModels.Add(bot);
             }
@@ -191,6 +195,8 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
         private void PopulateBotChoices(IBotConnection sender, IEnumerable<BotAction> retrievedBotActions, BotActionsViewModel botActionsViewModel)
         {
+            this._logger.LogDebug("In {class}.{method} for {type}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), typeof(BotActionsViewModel));
+
             var matchingBotVms = botActionsViewModel.Bots.Where(b => b.Name == sender.BotName).ToList();
             var matchingBotVm =
                 matchingBotVms.CheckAndLogTwoIsTooMany(
@@ -208,11 +214,15 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
                     if (null == matchingBotActionVm)
                     {
+                        this._logger.LogDebug("In {class}.{method}, creating bot action {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Identifier, retrievdAction.Name, typeof(BotActionViewModel));
+
                         matchingBotActionVm = new BotActionViewModel(retrievdAction);
                         matchingBotVm.BotActions.Add(matchingBotActionVm);
                     }
                     else
                     {
+                        this._logger.LogDebug("In {class}.{method}, updating bot action {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Identifier, retrievdAction.Name, typeof(BotActionViewModel));
+
                         matchingBotActionVm.Name = retrievdAction.Name;
                         matchingBotActionVm.Identifier = retrievdAction.Identifier;
                     }
@@ -238,6 +248,8 @@ namespace ModuloFivePadClient.DesktopClient.Models
                                 matchingArgumentVm.Type = retreivedArgument.Type;
                             }
                         }
+
+                        this._logger.LogDebug("In {class}.{method}, synchronized {parameterCount} parameters into arguments for {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Parameters, retrievdAction.Identifier, retrievdAction.Name, typeof(BotActionParameterViewModel));
                     }
                 }
             }
@@ -245,6 +257,8 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
         private void PopulateBotChoices(IBotConnection sender, IEnumerable<BotAction> retrievedBotActions, LinkageListViewModel linkagesViewModel)
         {
+            this._logger.LogDebug("In {class}.{method} for {type}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), typeof(LinkageListViewModel));
+
             var matchingBotVms = linkagesViewModel.ConfigureLinkage.BotChoices.Where(b => b.Name == sender.BotName).ToList();
             var matchingBotVm =
                 matchingBotVms.CheckAndLogTwoIsTooMany(
@@ -265,11 +279,15 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
                     if (null == matchingBotActionVm)
                     {
+                        this._logger.LogDebug("In {class}.{method}, creating bot action {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Identifier, retrievdAction.Name, typeof(LinkageActionChoiceViewModel));
+
                         matchingBotActionVm = new LinkageActionChoiceViewModel(retrievdAction);
                         matchingBotVm.ActionChoices.Add(matchingBotActionVm);
                     }
                     else
                     {
+                        this._logger.LogDebug("In {class}.{method}, updating bot action {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Identifier, retrievdAction.Name, typeof(LinkageActionChoiceViewModel));
+
                         matchingBotActionVm.Name = retrievdAction.Name ?? string.Empty;
                         matchingBotActionVm.Identifier = retrievdAction.Identifier ?? string.Empty;
                     }
@@ -291,6 +309,8 @@ namespace ModuloFivePadClient.DesktopClient.Models
                                 matchingBotActionVm.Parameters.Add(matchingParameterVm);
                             }
                         }
+
+                        this._logger.LogDebug("In {class}.{method}, synchronized {parameterCount} parameters into arguments for {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Parameters, retrievdAction.Identifier, retrievdAction.Name, typeof(LinkageParameterViewModel));
                     }
                 }
             }
@@ -298,6 +318,8 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
         private void IdentifyLinkageErrors(IBotConnection sender, IEnumerable<BotAction> retrievedBotActions, LinkageListViewModel linkagesViewModel)
         {
+            this._logger.LogDebug("In {class}.{method}.", nameof(MainWindowKitchenSinkModel), nameof(IdentifyLinkageErrors));
+
             linkagesViewModel.HasErrors = false;
             foreach (var linkageVm in linkagesViewModel.Linkages.Where(l => l.BotName == sender.BotName))
             {
@@ -306,6 +328,13 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
                 if (matchingRetrievedBotAction == null)
                 {
+                    this._logger.LogDebug(
+                        "In {class}.{method}, linkage references missing bot action {botActionName} ({botAction}).",
+                        nameof(MainWindowKitchenSinkModel),
+                        nameof(IdentifyLinkageErrors),
+                        linkageVm.BotActionName,
+                        linkageVm.BotActionId
+                    );
                     linkageVm.ActionDeleted = true;
                     linkagesViewModel.HasErrors = true;
                 }
@@ -323,13 +352,19 @@ namespace ModuloFivePadClient.DesktopClient.Models
                             linkageVm.HasErrors = true;
                             linkagesViewModel.HasErrors = true;
                         }
+                        this._logger.LogDebug(
+                            "In {class}.{method}, linkage references missing bot action parameter {botActionArgument}).",
+                            nameof(MainWindowKitchenSinkModel),
+                            nameof(IdentifyLinkageErrors),
+                            argumentVm.Name
+                        );
                     }
 
                     foreach (var parameter in retrievedParameters)
                     {
                         if (linkageVm.Arguments.All(vm => vm.Name != parameter.Name))
                         {
-#warning consider making most of the veiew-model not null.
+#warning consider making most of the view-model not null.
 #warning remove parameter type: nobody uses it?
                             linkageVm.Arguments.Add(new BotActionArgumentViewModel
                             {
@@ -345,17 +380,14 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
         private void MacroPadConnected(IMacroPadConnectionBuilder sender, IMacroPadConnection macroPadConnection)
         {
-            // _switchWrapper.SwitchStateChanged += (_, args, switchState) =>
-            // {
-
-            // };
-            // macroPadConnection.SwitchStateChanged += MacroPadSwitchChanged;
             _switchWrapper.SwitchStateChanged += MacroPadLogicalSwitchStateChanged;
             MacroPadConnected_MacroPadList(macroPadConnection);
         }
 
         private void MacroPadConnected_MacroPadList(IMacroPadConnection macroPadConnection)
         {
+            this._logger.LogDebug("In {class}.{method}.", nameof(MainWindowKitchenSinkModel), nameof(MacroPadConnected_MacroPadList));
+
             IList<KnownMacroPadViewModel> knownMacroPadVms =
                 this
                     .MainWindowViewModel
@@ -381,6 +413,8 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
                 knownMacroPadVm.IsConfigured = true;
                 knownMacroPadVm.IsOnline = true;
+
+                this._logger.LogDebug("In {class}.{method}, brought macro pad {macroPadName} ({macroPadSerialId}) online.", nameof(MainWindowKitchenSinkModel), nameof(MacroPadConnected_MacroPadList), knownMacroPadVm.Nickname, knownMacroPadVm.SerialId);
             }
             else
             {
@@ -411,13 +445,15 @@ namespace ModuloFivePadClient.DesktopClient.Models
                 }
 
                 this._macroPadConnections.Add(macroPadConnection);
+
+                this._logger.LogDebug("In {class}.{method}, added macro pad {macroPadSerialId}.", nameof(MainWindowKitchenSinkModel), nameof(MacroPadConnected_MacroPadList), macroPadConnection.SerialId);
             }
         }
 
-
-        // private void MacroPadSwitchChanged(IMacroPadConnection macroPad, SwitchStateChangeMessage message)
         private void MacroPadLogicalSwitchStateChanged(IMacroPadConnection macroPad, LogicalSwitchStateChangedArgs args)
         {
+            this._logger.LogDebug("In {class}.{method}.", nameof(MainWindowKitchenSinkModel), nameof(MacroPadLogicalSwitchStateChanged));
+
             OutboundSwitchState physicalState = args.OriginalMessage.SwitchState.ToOutboundSwitchState();
             OutboundSwitchState logicalState = args.LogicalSwitchState.ToOutboundSwitchState();
 
@@ -442,6 +478,8 @@ namespace ModuloFivePadClient.DesktopClient.Models
                         v.PhysicalState = physicalState;
                         v.LogicalState = logicalState;
                         noExistingSwitch = false;
+
+#warning why is there no break here?
                     }
                 }
 
@@ -453,6 +491,8 @@ namespace ModuloFivePadClient.DesktopClient.Models
                         PhysicalState = physicalState,
                         LogicalState = logicalState,
                     });
+
+                    this._logger.LogDebug("In {class}.{method} added switch {switchNumber} (one-based) to {destinationName}.", nameof(MainWindowKitchenSinkModel), nameof(MacroPadLogicalSwitchStateChanged), switchNumberOneBased, nameof(MainWindowViewModel.MacroPadList));
                 }
             }
 
@@ -469,6 +509,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
             if (null != linkage)
             {
+#warning this was sitting here with just this comment; why?
                 // linkage.
             }
 
@@ -481,6 +522,8 @@ namespace ModuloFivePadClient.DesktopClient.Models
             OutboundSwitchState physicalState,
             OutboundSwitchState logicalState)
         {
+            this._logger.LogDebug("In {class}.{method}.", nameof(MainWindowKitchenSinkModel), nameof(MacroPadLogicalSwitchChanged_MacroPadList));
+
             var macroPadViewModel = this.MainWindowViewModel.MacroPadList.KnownMacroPads.FirstOrDefault(mp => mp.SerialId == macroPadSerialId);
             var switchViewModel = macroPadViewModel?.Switches?.FirstOrDefault(sw => sw.SwitchNumberOneBased == switchNumberOneBased);
 
@@ -497,6 +540,8 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
         private void BotsModified(BotActionsViewModel sender)
         {
+            this._logger.LogDebug("In {class}.{method}.", nameof(MainWindowKitchenSinkModel), nameof(BotsModified));
+
             lock (lockObjectForTemporarySaveThing)
             {
                 var cfg = _moduloFivePadConfiguration.CloneCurrentConfigurationCopy();
@@ -526,6 +571,8 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
         private void MacroPadsModified(MacroPadListViewModel sender)
         {
+            this._logger.LogDebug("In {class}.{method}.", nameof(MainWindowKitchenSinkModel), nameof(BotsModified));
+
             foreach (var kmp in sender.KnownMacroPads)
             {
                 var linkageMacroPadChoices = MainWindowViewModel.LinkageList.ConfigureLinkage.MacroPadChoices.Where(lmp => lmp.SerialId == kmp.SerialId);
@@ -535,6 +582,16 @@ namespace ModuloFivePadClient.DesktopClient.Models
                 {
                     lmp = new() { SerialId = kmp.SerialId };
                     MainWindowViewModel.LinkageList.ConfigureLinkage.MacroPadChoices.Add(lmp);
+
+                    this._logger.LogDebug(
+                        "In {class}.{method}, added macro pad {macroPadName} ({macroPadSerialId}) to {configurationLinkage}.{choicesName}.",
+                        nameof(MainWindowKitchenSinkModel),
+                        nameof(BotsModified),
+                        kmp.Nickname,
+                        kmp.SerialId,
+                        nameof(MainWindowViewModel.LinkageList.ConfigureLinkage),
+                        nameof(MainWindowViewModel.LinkageList.ConfigureLinkage.MacroPadChoices)
+                    );
                 }
 
                 lmp.Nickname = kmp.Nickname;
@@ -550,11 +607,22 @@ namespace ModuloFivePadClient.DesktopClient.Models
                     }
 
                     ls.Nickname = ks.Nickname;
+
+                    this._logger.LogDebug(
+                        "In {class}.{method}, upserted macro pad switch {switchNumber} (one-based) to {configurationLinkage}.{choicesName}.",
+                        nameof(MainWindowKitchenSinkModel),
+                        nameof(BotsModified),
+                        ks.SwitchNumberOneBased,
+                        nameof(MainWindowViewModel.LinkageList.ConfigureLinkage),
+                        nameof(MainWindowViewModel.LinkageList.ConfigureLinkage.MacroPadChoices)
+                    );
                 }
             }
 
             lock (lockObjectForTemporarySaveThing)
             {
+                this._logger.LogDebug("In {class}.{method}, updating configuration.", nameof(MainWindowKitchenSinkModel), nameof(BotsModified));
+
                 var cfg = _moduloFivePadConfiguration.CloneCurrentConfigurationCopy();
                 cfg.MacroPads =
                     [.. sender.KnownMacroPads.Select(mpvm => new ModuloFiveConfiguration.MacroPad {
@@ -615,11 +683,4 @@ namespace ModuloFivePadClient.DesktopClient.Models
             }
         }
     }
-    public class MacroPadSwitchChangedHandlerArgs
-    {
-        public Guid? MacroPadSerialId { get; internal set; }
-        public OutboundSwitchState SwitchState { get; internal set; }
-        public int SwitchNumberOneBased { get; internal set; }
-    }
-    public delegate void MacroPadSwitchChangedHandler(MainWindowKitchenSinkModel sender, MacroPadSwitchChangedHandlerArgs args);
 }
