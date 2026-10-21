@@ -208,7 +208,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
             {
                 foreach (var retrievdAction in retrievedBotActions)
                 {
-                    var matchingBotActionVms = matchingBotVm.BotActions.Where(ba => ba.Name == retrievdAction.Name);
+                    var matchingBotActionVms = matchingBotVm.BotActions.Where(ba => ba.Identifier == retrievdAction.Identifier);
                     var matchingBotActionVm =
                         matchingBotActionVms.CheckAndLogTwoIsTooMany(nameof(matchingBotActionVms), _logger);
 
@@ -323,7 +323,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
             linkagesViewModel.HasErrors = false;
             foreach (var linkageVm in linkagesViewModel.Linkages.Where(l => l.BotName == sender.BotName))
             {
-                var matchingRetrievedBotActions = retrievedBotActions.Where(ba => ba.Name == linkageVm.BotActionName);
+                var matchingRetrievedBotActions = retrievedBotActions.Where(ba => ba.Identifier == linkageVm.BotActionId);
                 var matchingRetrievedBotAction = matchingRetrievedBotActions.CheckAndLogTwoIsTooMany(nameof(matchingRetrievedBotActions), _logger);
 
                 if (matchingRetrievedBotAction == null)
