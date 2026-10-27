@@ -1,0 +1,21 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+    <Platform Name="arm64" />
+  </Configurations>
+  <Folder Name="/ModuloFivePadController/">
+    <Project Path="src/MacroPad/MacroPad.csproj" />
+    <Project Path="src/BotConnections/BotConnections.csproj" />
+    <Project Path="src/ConsoleRunner/ConsoleRunner.csproj" />
+    <Project Path="src/Configuration/Configuration.csproj" />
+    <Project Path="src/DesktopClient/DesktopClient.csproj" />
+    <Project Path="src/RunnerCore/RunnerCore.csproj" />
+    <Project Path="src/Utilities/Utilities.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/ConfigurationTests/ConfigurationTests.csproj" />
+    <Project Path="test/MockObjects/MockObjects.csproj" />
+  </Folder>
+</Solution>

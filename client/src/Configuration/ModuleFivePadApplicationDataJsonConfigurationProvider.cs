@@ -4,7 +4,6 @@ using ModuloFivePadClient.Configuration.Json;
 using ModuloFivePadClient.Utilities;
 
 namespace ModuloFivePadClient.Configuration
-
 {
     using This = ModuleFivePadApplicationDataJsonConfigurationProvider;
 
@@ -13,6 +12,7 @@ namespace ModuloFivePadClient.Configuration
         private const string FILE_NAME = "settings.json";
         private const string FILE_NAME_WRITE_TO = "settings.json.temp";
         private readonly ILogger<This> _logger;
+        private readonly IModuloFiveConfigurationFileSystemService _configurationFileSystemService;
 
         private static string ConfigurationPath { get => Path.Combine(EnvironmentUtilities.EnsureConfigurationDirectory(), FILE_NAME); }
         private static string ConfigurationWriteToPath { get => Path.Combine(EnvironmentUtilities.EnsureConfigurationDirectory(), FILE_NAME_WRITE_TO); }
@@ -29,33 +29,25 @@ namespace ModuloFivePadClient.Configuration
             return obj ?? new ModuloFiveConfiguration();
         }
 
-        public ModuleFivePadApplicationDataJsonConfigurationProvider(ILogger<This> logger)
+        public ModuleFivePadApplicationDataJsonConfigurationProvider(ILogger<This> logger, IModuloFiveConfigurationFileSystemService configurationFileSystemService)
         {
-            this._logger = logger;
+            _logger = logger;
+            _configurationFileSystemService = configurationFileSystemService;
             _configuration = EnsureConfiguration();
         }
 
         public void WriteConfiguration()
         {
-            SerializesToFile(_configuration);
-        }
-
-        private ModuloFiveConfiguration? ReadConfiguration()
-        {
-            using FileStream fileStream = new FileStream(ConfigurationPath, FileMode.Open);
-
-            // Native AOT Support
-            var configuration = JsonSerializer.Deserialize<ModuloFiveConfiguration>(fileStream, ModuloFiveConfigurationJsonContext.Default.ModuloFiveConfiguration);
-            return configuration;
+            SerializeToFile(_configuration);
         }
 
         private ModuloFiveConfiguration EnsureConfiguration()
         {
             ModuloFiveConfiguration? configuration = null;
-            if (File.Exists(ConfigurationPath))
+            if (_configurationFileSystemService.ConfigurationFileExists())
             {
-                _logger.LogInformation("Configuration file {0} existed; attempting to load.", ConfigurationPath);
-                configuration = ReadConfiguration();
+                _logger.LogInformation("Configuration file existed; attempting to load.");
+                configuration = _configurationFileSystemService.ReadConfiguration();
             }
 
             if (null == configuration)
@@ -70,35 +62,146 @@ namespace ModuloFivePadClient.Configuration
 
         public ModuloFiveConfiguration CloneCurrentConfigurationCopy()
         {
-            return CloneConfiguration(this._configuration);
+            return CloneConfiguration(_configuration);
         }
 
-        public void UpdateConfiguration(ModuloFiveConfiguration configuration, ConfigurationPersistenceMode configurationPersistenceMode)
+        public void UpdateConfiguration(ModuloFiveConfiguration configuration, ConfigurationPersistenceMode configurationPersistenceMode = ConfigurationPersistenceMode.Immediate)
         {
+            if (null == configuration)
+            {
+                throw new ModuloFiveConfigurationException($"In {nameof(UpdateConfiguration)}, cannot update; {nameof(configuration)} is null.");
+            }
+
+            ThrowIfInvalid(configuration);
+
             if (configurationPersistenceMode == ConfigurationPersistenceMode.Immediate)
             {
-                SerializesToFile(configuration);
+                SerializeToFile(configuration);
             }
+
             _configuration = CloneConfiguration(configuration);
 
             ConfigurationChanged?.Invoke(CloneConfiguration(configuration));
         }
 
-        private void SerializesToFile(ModuloFiveConfiguration configuration)
+        private void ThrowIfInvalid(ModuloFiveConfiguration configuration)
         {
-            if (null == configuration)
+            foreach (var bot in configuration.Bots)
             {
-                // todo: throw a better exception
-                throw new NotImplementedException();
-            }
-            using (FileStream fileStream = new(ConfigurationWriteToPath, FileMode.OpenOrCreate))
-            using (StreamWriter streamWriter = new(fileStream))
-            {
-                var json = JsonSerializer.Serialize(configuration, ModuloFiveConfigurationJsonContext.Default.ModuloFiveConfiguration);
-                streamWriter.Write(json);
+                if (string.IsNullOrWhiteSpace(bot.Name?.Trim()))
+                {
+                    throw new ModuloFiveConfigurationException($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.Bot)}.{nameof(ModuloFiveConfiguration.Bot.Name)} is invalid.");
+                }
+
+                foreach (var action in bot.BotActions)
+                {
+                    if (string.IsNullOrWhiteSpace(action.Identifier))
+                    {
+                        throw new ModuloFiveConfigurationException($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.BotAction)}.{nameof(ModuloFiveConfiguration.BotAction.Identifier)} is invalid.");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(action.Name))
+                    {
+                        throw new ModuloFiveConfigurationException($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.BotAction)}.{nameof(ModuloFiveConfiguration.BotAction.Name)} is invalid.");
+                    }
+                }
             }
 
-            File.Move(ConfigurationWriteToPath, ConfigurationPath, true);
+            foreach (var macroPad in configuration.MacroPads)
+            {
+                if (null == macroPad.SerialId)
+                {
+                    throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.MacroPad)}.{nameof(ModuloFiveConfiguration.MacroPad.SerialId)} is invalid.");
+                }
+
+                if (null == macroPad.Version)
+                {
+                    throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.MacroPad)}.{nameof(ModuloFiveConfiguration.MacroPad.Version)} is invalid.");
+                }
+
+                if (null == macroPad.ProductId)
+                {
+                    throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.MacroPad)}.{nameof(ModuloFiveConfiguration.MacroPad.ProductId)} is invalid.");
+                }
+            }
+
+            foreach (var linkage in configuration.Linkages)
+            {
+                if (string.IsNullOrWhiteSpace(linkage.BotActionId))
+                {
+                    throw new ModuloFiveConfigurationException($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.BotActionId)} is invalid.");
+                }
+
+                if (string.IsNullOrWhiteSpace(linkage.BotActionName))
+                {
+                    throw new ModuloFiveConfigurationException($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.BotActionName)} is invalid.");
+                }
+
+                if (string.IsNullOrWhiteSpace(linkage.BotName))
+                {
+                    throw new ModuloFiveConfigurationException($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.BotName)} is invalid.");
+                }
+
+                if (null == linkage.MacroPadSerialId)
+                {
+                    throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.MacroPadSerialId)} is invalid.");
+                }
+
+                if (null == linkage.SwitchNumber)
+                {
+                    throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.SwitchNumber)} is invalid.");
+                }
+
+                if (null == linkage.TriggerState)
+                {
+                    throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.TriggerState)} is invalid.");
+                }
+
+                foreach (var argument in linkage.Arguments)
+                {
+                    if (string.IsNullOrWhiteSpace(argument.Name))
+                    {
+                        throw new ModuloFiveConfigurationException($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.LinkageArgument)}.{nameof(ModuloFiveConfiguration.LinkageArgument.Name)} is invalid.");
+                    }
+                }
+            }
+        }
+
+        private void SerializeToFile(ModuloFiveConfiguration uncorrectedConfiguration)
+        {
+            if (null == uncorrectedConfiguration)
+            {
+                throw new ModuloFiveConfigurationException($"In {nameof(SerializeToFile)}, cannot serialize; {nameof(uncorrectedConfiguration)} is null.");
+            }
+
+            var correctedConfiguration = CloneConfiguration(uncorrectedConfiguration);
+
+            foreach (var bot in correctedConfiguration.Bots)
+            {
+                if (string.IsNullOrWhiteSpace(bot.Nickname))
+                {
+                    bot.Nickname = null;
+                }
+            }
+
+            foreach (var argument in correctedConfiguration.Linkages.SelectMany(l => l.Arguments))
+            {
+                if (string.IsNullOrWhiteSpace(argument.Value))
+                {
+                    argument.Value = null;
+                }
+            }
+
+            _configurationFileSystemService.WriteConfiguration(correctedConfiguration);
+
+            // using (FileStream fileStream = new(ConfigurationWriteToPath, FileMode.OpenOrCreate))
+            // using (StreamWriter streamWriter = new(fileStream))
+            // {
+            //     var json = JsonSerializer.Serialize(configuration, ModuloFiveConfigurationJsonContext.Default.ModuloFiveConfiguration);
+            //     streamWriter.Write(json);
+            // }
+
+            // File.Move(ConfigurationWriteToPath, ConfigurationPath, true);
         }
 
         // private ConcurrentQueue<Action<ModuloFiveConfiguration>> _configurationChangeQueue = new();

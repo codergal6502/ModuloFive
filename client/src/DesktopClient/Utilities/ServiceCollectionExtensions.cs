@@ -9,9 +9,9 @@ using ModuloFivePadClient.DesktopClient.Models;
 using ModuloFivePadClient.DesktopClient.ViewModels;
 using ModuloFivePadClient.MacroPad.Serial;
 using ModuloFivePadClient.RunnerCore;
-using ModuloFivePadClient.Utilities;
 using Serilog;
 using Serilog.Events;
+using static ModuloFivePadClient.Configuration.ModuloFiveConfigurationFileSystemService;
 
 namespace ModuloFivePadClient.DesktopClient.Utilities
 {
@@ -59,6 +59,8 @@ namespace ModuloFivePadClient.DesktopClient.Utilities
                 .AddSingleton<IBotConnectionBuilder, HttpBotConnectionBuilder>()
                 .AddSingleton<IHttpBotConnectionConfigurationProvider, TemporaryConfigProvider>()
                 .AddSingleton<IModuloFivePadConfigurationProvider, ModuleFivePadApplicationDataJsonConfigurationProvider>()
+                .AddSingleton<IModuloFiveConfigurationFileSystemService, ModuloFiveConfigurationFileSystemService>()
+                .AddSingleton(PathAndFileNameSet.Default)
                 .AddSingleton<IRunner, Runner>()
 
                 .AddTransient<ISwitchToggleModeWrapper, SwitchToggleModeWrapper>()

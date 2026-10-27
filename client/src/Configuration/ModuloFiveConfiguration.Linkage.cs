@@ -10,7 +10,7 @@ namespace ModuloFivePadClient.Configuration
             public string? BotName { get; set; }
             public string? BotActionId { get; set; }
             public string? BotActionName { get; set; }
-            public LinkageArgument[]? Arguments { get; set; } = [];
+            public LinkageArgument[] Arguments { get; set; } = [];
         }
     }
 }

@@ -22,6 +22,7 @@ namespace ModuloFivePadClient.DesktopClient.ViewModels
             if (original != null)
             {
                 _name = original.Name;
+                _identifier = original.Identifier;
                 if (original.Parameters != null)
                 {
                     Parameters = [.. original.Parameters.Select(a => new BotActionParameterViewModel(a))];

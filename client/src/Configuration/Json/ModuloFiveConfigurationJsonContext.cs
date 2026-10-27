@@ -13,7 +13,7 @@ namespace ModuloFivePadClient.Configuration.Json
         AllowTrailingCommas = true
     )]
     [JsonSerializable(typeof(ModuloFiveConfiguration[]))]
-    internal partial class ModuloFiveConfigurationJsonContext : JsonSerializerContext
+    public partial class ModuloFiveConfigurationJsonContext : JsonSerializerContext
     {
 
     }
