@@ -10,36 +10,31 @@ namespace ModuloFivePadClient.RunnerCore
     public class Runner : IRunner
     {
         private readonly ILogger<Runner> _logger;
-        private readonly IModuloFivePadConfigurationProvider _configurationProvider;
         private readonly ISwitchToggleModeWrapper _switchWrapper;
         private readonly IList<IBotConnectionBuilder> _connectionBuilders;
         private readonly List<RunnerLinkage> _runnerLinkages;
         private readonly object _lockObject;
         private readonly List<IBotConnection> _bots;
 
-        public Runner(ILogger<Runner> logger, IModuloFivePadConfigurationProvider configurationProvider, ISwitchToggleModeWrapper switchWrapper, IEnumerable<IBotConnectionBuilder> connectionBuilders)
+        public Runner(ILogger<Runner> logger, ISwitchToggleModeWrapper switchWrapper, IEnumerable<IBotConnectionBuilder> connectionBuilders)
         {
-            this._logger = logger;
-            this._configurationProvider = configurationProvider;
-            this._switchWrapper = switchWrapper;
-            this._connectionBuilders = connectionBuilders.ToList();
-            this._runnerLinkages = [];
-            this._lockObject = new();
-            this._bots = [];
+            _logger = logger;
+            _switchWrapper = switchWrapper;
+            _connectionBuilders = [.. connectionBuilders];
+            _runnerLinkages = [];
+            _lockObject = new();
+            _bots = [];
 
-            this._switchWrapper.SwitchStateChanged += SwitchStateChanged;
-            foreach (var cb in this._connectionBuilders)
+            _switchWrapper.SwitchStateChanged += SwitchStateChanged;
+            foreach (var cb in _connectionBuilders)
             {
                 cb.BotConnected += BotConnected;
             }
-
-            LoadConfiguration(this._configurationProvider.CloneCurrentConfigurationCopy());
-            this._configurationProvider.ConfigurationChanged += LoadConfiguration;
         }
 
         private void BotConnected(IBotConnectionBuilder sender, IBotConnection botConnection)
         {
-            this._bots.Add(botConnection);
+            _bots.Add(botConnection);
         }
 
         private void SwitchStateChanged(IMacroPadConnection macroPad, LogicalSwitchStateChangedArgs args)
@@ -50,7 +45,7 @@ namespace ModuloFivePadClient.RunnerCore
                 _logger.LogDebug("{LogicalSwitchStateChanged} did not change.", nameof(args.LogicalSwitchStateChanged));
                 return;
             }
-            lock (this._lockObject)
+            lock (_lockObject)
             {
                 foreach (var linkage in _runnerLinkages)
                 {
@@ -96,6 +91,7 @@ namespace ModuloFivePadClient.RunnerCore
                                 string.Join(", ", arguments.Select(a => $"{a.Name} = {a.Value}"))
                                 );
 
+                            #warning this should indicate the result of the action!
                             bot.InvokeAction(linkage.BotActionId, arguments);
                             LinkagePerformed?.Invoke(this, new LinkagePerformedArgs(linkage));
                         }
@@ -109,13 +105,13 @@ namespace ModuloFivePadClient.RunnerCore
         public void LoadConfiguration(ModuloFiveConfiguration cfg)
         {
             _logger.LogDebug("In {class}.{LoadConfiguration}, loading configuration.", nameof(Runner), nameof(LoadConfiguration));
-            lock (this._lockObject)
+            lock (_lockObject)
             {
                 _runnerLinkages.Clear();
                 foreach (var cfgLinkage in cfg.Linkages)
                 {
-                    if (null != cfgLinkage.TriggerState)
-                    {
+                    // if (null != cfgLinkage.TriggerState)
+                    // {
                         var newLinkage = new RunnerLinkage(cfgLinkage);
                         _runnerLinkages.Add(newLinkage);
                         if (newLinkage.Invalid)
@@ -142,7 +138,7 @@ namespace ModuloFivePadClient.RunnerCore
                             cfgLinkage.Arguments?.Length ?? 0,
                             string.Join(", ", cfgLinkage?.Arguments?.Select(a => $"{a.Name} = {a.Value}") ?? [])
                         );
-                    }
+                    // }
                 }
             }
         }

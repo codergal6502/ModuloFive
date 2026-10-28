@@ -6,7 +6,7 @@ namespace ModuloFivePadClient.Configuration
         {
             public string? Name { get; set; }
             public string? Identifier { get; set; }
-            public BotActionParameter[]? Parameters { get; set; } = [];
+            public BotActionParameter[] Parameters { get; set; } = [];
         }
     }
 }

@@ -80,7 +80,8 @@ namespace ModuloFivePadClient.RunnerCore
             {
                 foreach (var sw in pad.Switches)
                 {
-                    if ((null != pad.SerialId) && (null != sw.SwitchNumber))
+                    #warning remove commented out code
+                    // if ((null != pad.SerialId) && (null != sw.SwitchNumber))
                     {
                         var key = new SwitchIdentifier { serialId = (Guid)pad.SerialId, switchNumber = (byte)sw.SwitchNumber };
 

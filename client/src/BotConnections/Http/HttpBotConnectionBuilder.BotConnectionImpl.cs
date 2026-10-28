@@ -300,7 +300,7 @@ namespace ModuloFivePadClient.BotConnections.Http
                 }
             }
 
-            public void InvokeAction(string? botActionId, IEnumerable<BotArgument> arguments)
+            public void InvokeAction(string botActionId, IEnumerable<BotArgument> arguments)
             {
                 InvokeActionAsync(botActionId, arguments).GetAwaiter().GetResult();
             }

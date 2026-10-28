@@ -4,13 +4,13 @@ namespace ModuloFivePadClient.Configuration
     {
         public class Linkage
         {
-            public Guid? MacroPadSerialId { get; set; }
-            public int? SwitchNumber { get; set; }
-            public SwitchState? TriggerState { get; set; }
-            public string? BotName { get; set; }
-            public string? BotActionId { get; set; }
-            public string? BotActionName { get; set; }
-            public LinkageArgument[] Arguments { get; set; } = [];
+            public required Guid MacroPadSerialId { get; set; }
+            public required int SwitchNumber { get; set; }
+            public required SwitchState TriggerState { get; set; }
+            public required string BotName { get; set; }
+            public required string BotActionId { get; set; }
+            public required string BotActionName { get; set; }
+            public required LinkageArgument[] Arguments { get; set; }
         }
     }
 }

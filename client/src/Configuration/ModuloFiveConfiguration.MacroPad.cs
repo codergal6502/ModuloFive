@@ -4,11 +4,11 @@ namespace ModuloFivePadClient.Configuration
     {
         public class MacroPad
         {
-            public Guid? ProductId { get; set; } = null;
-            public Version? Version { get; set; } = null;
-            public Guid? SerialId { get; set; } = null;
-            public string? Nickname { get; set; } = null;
-            public List<Switch> Switches { get; set; } = [];
+            public required Guid ProductId { get; set; }
+            public required Version Version { get; set; }
+            public required Guid SerialId { get; set; }
+            public required string Nickname { get; set; }
+            public required List<Switch> Switches { get; set; }
         }
     }
 }

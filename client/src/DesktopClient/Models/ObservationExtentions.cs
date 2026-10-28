@@ -256,7 +256,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
                     MacroPadVersion = cfgMp.Version,
                     Nickname = cfgMp.Nickname ?? string.Empty,
                     ProductId = cfgMp.ProductId,
-                    SerialId = cfgMp.SerialId ?? Guid.Empty,
+                    SerialId = cfgMp.SerialId,
                 };
 
                 vmMp.Switches.AddRange(
@@ -265,7 +265,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
                         SwitchMode = ConvertEnumCfg(cfgSw.SwitchMode),
                         Nickname = cfgSw.Nickname ?? string.Empty,
                         LogicalState = ViewModels.SwitchState.Unknown,
-                        SwitchNumberOneBased = cfgSw.SwitchNumber + 1 ?? 1
+                        SwitchNumberOneBased = cfgSw.SwitchNumber + 1
                     }
                     )
                 );
@@ -310,7 +310,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
             {
                 var newMacroPadChoiceVm = new LinkageMacroPadChoice
                 {
-                    SerialId = cfgMacroPad.SerialId ?? Guid.Empty,
+                    SerialId = cfgMacroPad.SerialId,
                     Nickname = cfgMacroPad.Nickname ?? String.Empty,
                 };
                 vm.ConfigureLinkage.MacroPadChoices.Add(newMacroPadChoiceVm);
@@ -319,7 +319,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
                 {
                     var newMacroSwitchChoiceVm = new LinkageSwitchChoice
                     {
-                        SwitchNumberOneBased = (cfgSwitch.SwitchNumber ?? 0) + 1,
+                        SwitchNumberOneBased = cfgSwitch.SwitchNumber + 1,
                         Nickname = cfgSwitch.Nickname ?? String.Empty,
                     };
 
@@ -333,7 +333,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
                 {
                     MacroPadSerialId = cfgLinkage.MacroPadSerialId,
                     MacroPadName = cfg.MacroPads.FirstOrDefault(mp => mp.SerialId == cfgLinkage.MacroPadSerialId)?.Nickname ?? String.Empty,
-                    SwitchNumberOneBased = (cfgLinkage.SwitchNumber ?? 0) + 1,
+                    SwitchNumberOneBased = cfgLinkage.SwitchNumber + 1,
                     SwitchName = cfg.MacroPads.FirstOrDefault(mp => mp.SerialId == cfgLinkage.MacroPadSerialId)?.Switches?.FirstOrDefault(s => s.SwitchNumber == cfgLinkage.SwitchNumber)?.Nickname ?? String.Empty,
                     TriggerState = ConvertEnumCfg(cfgLinkage.TriggerState),
                     BotActionId = cfgLinkage.BotActionId ?? String.Empty,

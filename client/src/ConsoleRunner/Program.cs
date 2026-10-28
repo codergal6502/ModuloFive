@@ -65,6 +65,7 @@ public class Program
 
     async Task Setup()
     {
+        _runner.LoadConfiguration(_configurationProvider.CloneCurrentConfigurationCopy());
         List<Bot> expectedBots = [.. _configuration.Bots.Where(b => b.IsEnabled == true)];
         List<MacroPad> expectedPads = [.. _configuration.MacroPads];
 

@@ -4,9 +4,9 @@ namespace ModuloFivePadClient.Configuration
     {
         public class Switch
         {
-            public int? SwitchNumber { get; set; }
-            public string? Nickname { get; set; }
-            public SwitchMode? SwitchMode { get; set; }
+            public required int SwitchNumber { get; set; }
+            public required string Nickname { get; set; }
+            public required SwitchMode SwitchMode { get; set; }
         }
     }
 }

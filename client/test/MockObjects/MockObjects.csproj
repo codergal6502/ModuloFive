@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Configuration\Configuration.csproj" />
+    <ProjectReference Include="..\..\src\RunnerCore\RunnerCore.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

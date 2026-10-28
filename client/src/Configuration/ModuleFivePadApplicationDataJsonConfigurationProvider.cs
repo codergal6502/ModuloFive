@@ -41,6 +41,15 @@ namespace ModuloFivePadClient.Configuration
             SerializeToFile(_configuration);
         }
 
+        private ModuloFiveConfiguration? ReadConfiguration()
+        {
+            using FileStream fileStream = new FileStream(ConfigurationPath, FileMode.Open);
+
+            // Native AOT Support
+            var configuration = JsonSerializer.Deserialize<ModuloFiveConfiguration>(fileStream, ModuloFiveConfigurationJsonContext.Default.ModuloFiveConfiguration);
+            return configuration;
+        }
+
         private ModuloFiveConfiguration EnsureConfiguration()
         {
             ModuloFiveConfiguration? configuration = null;
@@ -109,20 +118,20 @@ namespace ModuloFivePadClient.Configuration
 
             foreach (var macroPad in configuration.MacroPads)
             {
-                if (null == macroPad.SerialId)
-                {
-                    throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.MacroPad)}.{nameof(ModuloFiveConfiguration.MacroPad.SerialId)} is invalid.");
-                }
+                // if (null == macroPad.SerialId)
+                // {
+                //     throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.MacroPad)}.{nameof(ModuloFiveConfiguration.MacroPad.SerialId)} is invalid.");
+                // }
 
                 if (null == macroPad.Version)
                 {
                     throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.MacroPad)}.{nameof(ModuloFiveConfiguration.MacroPad.Version)} is invalid.");
                 }
 
-                if (null == macroPad.ProductId)
-                {
-                    throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.MacroPad)}.{nameof(ModuloFiveConfiguration.MacroPad.ProductId)} is invalid.");
-                }
+                // if (null == macroPad.ProductId)
+                // {
+                //     throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.MacroPad)}.{nameof(ModuloFiveConfiguration.MacroPad.ProductId)} is invalid.");
+                // }
             }
 
             foreach (var linkage in configuration.Linkages)
@@ -142,20 +151,21 @@ namespace ModuloFivePadClient.Configuration
                     throw new ModuloFiveConfigurationException($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.BotName)} is invalid.");
                 }
 
-                if (null == linkage.MacroPadSerialId)
-                {
-                    throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.MacroPadSerialId)} is invalid.");
-                }
+#warning remove these commented-out lines
+                // if (null == linkage.MacroPadSerialId)
+                // {
+                //     throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.MacroPadSerialId)} is invalid.");
+                // }
 
-                if (null == linkage.SwitchNumber)
-                {
-                    throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.SwitchNumber)} is invalid.");
-                }
+                // if (null == linkage.SwitchNumber)
+                // {
+                //     throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.SwitchNumber)} is invalid.");
+                // }
 
-                if (null == linkage.TriggerState)
-                {
-                    throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.TriggerState)} is invalid.");
-                }
+                // if (null == linkage.TriggerState)
+                // {
+                //     throw new ModuloFiveConfigurationException($"Configuration with null {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.TriggerState)} is invalid.");
+                // }
 
                 foreach (var argument in linkage.Arguments)
                 {

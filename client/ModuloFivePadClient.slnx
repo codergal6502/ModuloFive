@@ -17,5 +17,6 @@
   <Folder Name="/test/">
     <Project Path="test/ConfigurationTests/ConfigurationTests.csproj" />
     <Project Path="test/MockObjects/MockObjects.csproj" />
+    <Project Path="test/RunnerCoreTests/RunnerCoreTests.csproj" />
   </Folder>
 </Solution>

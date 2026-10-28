@@ -51,7 +51,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
     public class MainWindowKitchenSinkModel : IDisposable
     {
         private readonly ILogger<MainWindowKitchenSinkModel> _logger;
-        private readonly IModuloFivePadConfigurationProvider _moduloFivePadConfiguration;
+        private readonly IModuloFivePadConfigurationProvider _moduloFivePadConfigurationProvider;
         private readonly IMacroPadConnectionBuilder _macroPadConnectionBuilder;
         private readonly IEnumerable<IBotConnectionBuilder> _botConnectionBuilders;
         private readonly ISwitchToggleModeWrapper _switchWrapper;
@@ -62,10 +62,10 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
         public MainWindowViewModel MainWindowViewModel { get; }
 
-        public MainWindowKitchenSinkModel(ILogger<MainWindowKitchenSinkModel> logger, IRunner runner, ISwitchToggleModeWrapper switchWrapper, IModuloFivePadConfigurationProvider moduloFivePadConfiguration, IMacroPadConnectionBuilder macroPadConnectionBuilder, IEnumerable<IBotConnectionBuilder> botConnectionBuilders, MainWindowViewModel mainWindowViewModel)
+        public MainWindowKitchenSinkModel(ILogger<MainWindowKitchenSinkModel> logger, IRunner runner, ISwitchToggleModeWrapper switchWrapper, IModuloFivePadConfigurationProvider moduloFivePadConfigurationProvider, IMacroPadConnectionBuilder macroPadConnectionBuilder, IEnumerable<IBotConnectionBuilder> botConnectionBuilders, MainWindowViewModel mainWindowViewModel)
         {
             this._logger = logger;
-            this._moduloFivePadConfiguration = moduloFivePadConfiguration;
+            this._moduloFivePadConfigurationProvider = moduloFivePadConfigurationProvider;
             this._macroPadConnectionBuilder = macroPadConnectionBuilder;
             this._botConnectionBuilders = botConnectionBuilders;
             this._switchWrapper = switchWrapper;
@@ -109,6 +109,15 @@ namespace ModuloFivePadClient.DesktopClient.Models
             this.MainWindowViewModel.BotActions.ModuloFiveConfigurationChangeNeeded += BotsModified;
 
             this.MainWindowViewModel.OnReady += OnWindowViewModelReady;
+
+            var cfg = _moduloFivePadConfigurationProvider.CloneCurrentConfigurationCopy();
+            _runner.LoadConfiguration(cfg);
+            _moduloFivePadConfigurationProvider.ConfigurationChanged += ConfigurationChanged;
+        }
+
+        private void ConfigurationChanged(ModuloFiveConfiguration configuration)
+        {
+            _runner.LoadConfiguration(configuration);
         }
 
         #region Window Loading
@@ -544,7 +553,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
             lock (lockObjectForTemporarySaveThing)
             {
-                var cfg = _moduloFivePadConfiguration.CloneCurrentConfigurationCopy();
+                var cfg = _moduloFivePadConfigurationProvider.CloneCurrentConfigurationCopy();
                 cfg.Bots =
                     sender
                         .Bots
@@ -565,7 +574,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
                             }).ToArray()
                         })
                         .ToList();
-                _moduloFivePadConfiguration.UpdateConfiguration(cfg);
+                _moduloFivePadConfigurationProvider.UpdateConfiguration(cfg);
             }
         }
 
@@ -623,20 +632,20 @@ namespace ModuloFivePadClient.DesktopClient.Models
             {
                 this._logger.LogDebug("In {class}.{method}, updating configuration.", nameof(MainWindowKitchenSinkModel), nameof(BotsModified));
 
-                var cfg = _moduloFivePadConfiguration.CloneCurrentConfigurationCopy();
+                var cfg = _moduloFivePadConfigurationProvider.CloneCurrentConfigurationCopy();
                 cfg.MacroPads =
                     [.. sender.KnownMacroPads.Select(mpvm => new ModuloFiveConfiguration.MacroPad {
                         Nickname = mpvm.Nickname,
-                        ProductId = mpvm.ProductId,
+                        ProductId = mpvm.ProductId ?? throw new NotImplementedException(nameof(mpvm.ProductId)),
                         SerialId = mpvm.SerialId,
-                        Version = mpvm.MacroPadVersion,
+                        Version = mpvm.MacroPadVersion ?? throw new NotImplementedException(nameof(mpvm.MacroPadVersion)),
                         Switches = [.. mpvm.Switches.Select(svm => new ModuloFiveConfiguration.Switch {
                             Nickname = svm.Nickname,
-                            SwitchMode = ViewModelUtilities.ConvertEnumCfg(svm.SwitchMode),
+                            SwitchMode = ViewModelUtilities.ConvertEnumCfg(svm.SwitchMode) ?? throw new NotImplementedException(nameof(svm.SwitchMode)),
                             SwitchNumber = svm.SwitchNumberOneBased - 1,
                         })]
                     })];
-                _moduloFivePadConfiguration.UpdateConfiguration(cfg);
+                _moduloFivePadConfigurationProvider.UpdateConfiguration(cfg);
             }
         }
 
@@ -644,22 +653,34 @@ namespace ModuloFivePadClient.DesktopClient.Models
         {
             lock (lockObjectForTemporarySaveThing)
             {
-                var cfg = _moduloFivePadConfiguration.CloneCurrentConfigurationCopy();
+                var cfg = _moduloFivePadConfigurationProvider.CloneCurrentConfigurationCopy();
                 cfg.Linkages =
                     [.. sender.Linkages.Select(l => new ModuloFiveConfiguration.Linkage {
-                        MacroPadSerialId = l.MacroPadSerialId,
-                        SwitchNumber = l.SwitchNumberOneBased - 1,
-                        TriggerState = ViewModelUtilities.ConvertEnumCfg(l.TriggerState),
-                        BotName = l.BotName,
+                        MacroPadSerialId = l.MacroPadSerialId ?? throw new NotImplementedException(),
+                        SwitchNumber = l.SwitchNumberOneBased - 1 ?? throw new NotImplementedException(),
+                        TriggerState = ViewModelUtilities.ConvertEnumCfg(l.TriggerState) ?? throw new NotImplementedException(),
+                        BotName = l.BotName ?? throw new NotImplementedException(),
                         BotActionId = l.BotActionId,
-                        BotActionName = l.BotActionName,
+                        BotActionName = l.BotActionName ?? throw new NotImplementedException(),
                         Arguments = [..l.Arguments.Select(a => new ModuloFiveConfiguration.LinkageArgument{
-                            Name = a.Name,
+                            Name = a.Name ?? throw new NotImplementedException(nameof(a.Name)),
                             Value = a.Value
                         })]
                     })];
-                _moduloFivePadConfiguration.UpdateConfiguration(cfg);
-            }
+            // [.. sender.Linkages.Select(l => new ModuloFiveConfiguration.Linkage {
+            //     MacroPadSerialId = l.MacroPadSerialId,
+            //     SwitchNumber = l.SwitchNumberOneBased - 1,
+            //     TriggerState = ViewModelUtilities.ConvertEnumCfg(l.TriggerState),
+            //     BotName = l.BotName,
+            //     BotActionId = l.BotActionId,
+            //     BotActionName = l.BotActionName,
+            //     Arguments = [..l.Arguments.Select(a => new ModuloFiveConfiguration.LinkageArgument{
+            //         Name = a.Name,
+            //         Value = a.Value
+            //     })]
+            // })];
+            _moduloFivePadConfigurationProvider.UpdateConfiguration(cfg);
+        }
         }
 
         #endregion Configuration Change Request Handlers

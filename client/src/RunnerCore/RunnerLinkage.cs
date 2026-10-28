@@ -21,27 +21,19 @@ namespace ModuloFivePadClient.RunnerCore
         }
         public RunnerLinkage(ModuloFiveConfiguration.Linkage cfgLinkage)
         {
-            ModuloFiveConfiguration.SwitchState? triggerState = cfgLinkage.TriggerState;
-
-            if (triggerState == null)
-            {
-                this.Invalid = true;
-                return;
-            }
-
-            this.Invalid = false;
-            this.MacroPadSerialId = cfgLinkage.MacroPadSerialId;
-            this.SwitchNumber = cfgLinkage.SwitchNumber;
-            this.TriggerState = ToSerialSwitchState((ModuloFiveConfiguration.SwitchState)triggerState);
-            this.BotName = cfgLinkage.BotName;
-            this.BotActionId = cfgLinkage.BotActionId;
+            Invalid = false;
+            MacroPadSerialId = cfgLinkage.MacroPadSerialId;
+            SwitchNumber = cfgLinkage.SwitchNumber;
+            TriggerState = ToSerialSwitchState(cfgLinkage.TriggerState);
+            BotName = cfgLinkage.BotName;
+            BotActionId = cfgLinkage.BotActionId;
         }
 
-        public Guid? MacroPadSerialId { get; set; }
-        public int? SwitchNumber { get; set; }
-        public SwitchState? TriggerState { get; set; }
-        public string? BotName { get; set; }
-        public string? BotActionId { get; set; }
+        public Guid MacroPadSerialId { get; set; }
+        public int SwitchNumber { get; set; }
+        public SwitchState TriggerState { get; set; }
+        public string BotName { get; set; }
+        public string BotActionId { get; set; }
         public List<RunnerLinkageArgument> Arguments { get; set; } = [];
         public bool Invalid { get; }
     }

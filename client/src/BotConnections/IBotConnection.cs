@@ -11,13 +11,14 @@ namespace ModuloFivePadClient.BotConnections
         Task<BotStatus> GetStatusAsync();
 
         Task<IList<BotAction>> GetBotActionListsAsync();
-        
-        void InvokeAction(string? botActionId, IEnumerable<BotArgument> arguments);
+
+        void InvokeAction(string botActionId, IEnumerable<BotArgument> arguments);
 
         IList<BotAction> BotActions { get; }
 
         event ActionListRetreivedHandler? OnActionListRetrieved;
 
         event ActionSuceededHandler? ActionSuceeded;
+        event ActionFailedHandler? ActionFailed;
     }
 }
