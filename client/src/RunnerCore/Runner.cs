@@ -85,7 +85,19 @@ namespace ModuloFivePadClient.RunnerCore
 
                             foreach (var linkageArg in linkage.Arguments)
                             {
-                                if (linkageArg.Value != null)
+                                if (false == botAction.Parameters?.Any(p => p.Name == linkageArg.Name))
+                                {
+                                    _logger.LogWarning(
+                                        "In {class}.{func}, linkage argument {argName}={argValue} does not correspond to any parameters of {botActionName} ({botActionId}).",
+                                        nameof(Runner),
+                                        nameof(SwitchStateChanged),
+                                        linkageArg.Name,
+                                        linkageArg.Value ?? "<null>",
+                                        botAction.Name,
+                                        botAction.BotActionId
+                                    );
+                                }
+                                else if (linkageArg.Value != null)
                                 {
                                     arguments.Add(new BotArgument(linkageArg.Name, linkageArg.Value));
                                 }
@@ -98,7 +110,7 @@ namespace ModuloFivePadClient.RunnerCore
                                 linkage.BotName,
                                 linkage.BotActionId,
                                 string.Join(", ", arguments.Select(a => $"{a.Name} = {a.Value}"))
-                                );
+                            );
 
                             if (bot.InvokeAction(linkage.BotActionId, arguments))
                             {

@@ -12,43 +12,6 @@ public sealed class RunnerCoreLinkageScenarios
 {
     private static readonly ILogger<Runner> runnerLogger = new NullLogger<Runner>();
 
-    // POSITIVE SCENARIOS:
-    // A: Missing Components
-    //    1. No Matching Bot
-    //       No events raised/callbacks made
-    //    2. No Matching Bot Action
-    //       No events raised/callbacks made
-    //    3. No Matching Macro Pad
-    //       No events raised/callbacks made
-    //    4. No Matching Switch Number
-    //       No events raised/callbacks made
-    // B: Bot Action Invocation Failed
-    //    OnMockInvokeAction
-    //    ActionFailed
-    // C: Switches:
-    //    1. Trigger = Changed, State = On
-    //       OnMockInvokeAction
-    //       ActionSuceeded
-    //       LinkagePerformed
-    //    2. Trigger = Changed, State = Off
-    //       OnMockInvokeAction
-    //       ActionSuceeded
-    //       LinkagePerformed
-    //    3. Trigger = On, State = On
-    //       OnMockInvokeAction
-    //       ActionSuceeded
-    //       LinkagePerformed
-    //    4. Trigger = On, State = Off
-    //       No events raised/callbacks made
-    //    5. Trigger = Off, State = On
-    //       No events raised/callbacks made
-    //    6. Trigger = Off, State = Off
-    //       OnMockInvokeAction
-    //       ActionSuceeded
-    //       LinkagePerformed
-    // D: Parameter/Argument Mismatch
-    //    1. ????? pretty sure this is outside the parameterized thing
-
     [TestClass]
     public sealed class Positive
     {
@@ -455,8 +418,6 @@ public sealed class RunnerCoreLinkageScenarios
             );
         }
 
-
-
         [TestMethod]
         public void SwitchChanged_LinkedTriggerIsOn_SwitchStateIsOn_InvocationFails_NoCallbacks()
         {
@@ -475,9 +436,166 @@ public sealed class RunnerCoreLinkageScenarios
             );
         }
 
+        [TestMethod]
+        public void SwitchChanged_Parameter_Argument_Mismatch()
+        {
+            ModuloFiveConfiguration cfg = new();
 
+            string inBotConfigOnly = "in bot config only";
+            string inBotConfigAndLinkage = "in bot config and linkage";
+            string inBotConfigAndBotConnction = "in bot config and bot connection";
+            string inBotConfigLinkageAndBotConnection = "in bot config, bot connection and linkage";
 
+            cfg.Bots.Add(
+                new ModuloFiveConfiguration.Bot
+                {
+                    Name = MockTextGenerator.Generate(3),
+                    Nickname = MockTextGenerator.Generate(3),
+                    IsEnabled = true,
+                    BotActions = [ new ModuloFiveConfiguration.BotAction {
+                        Name = MockTextGenerator.Generate(3),
+                        BotActionId = Guid.NewGuid().ToString(),
+                        Parameters = [
+                            new ModuloFiveConfiguration.BotActionParameter {
+                                Name = inBotConfigOnly
+                            },
+                            new ModuloFiveConfiguration.BotActionParameter {
+                                Name = inBotConfigAndLinkage
+                            },
+                            new ModuloFiveConfiguration.BotActionParameter {
+                                Name = inBotConfigAndBotConnction
+                            },
+                            new ModuloFiveConfiguration.BotActionParameter {
+                                Name = inBotConfigLinkageAndBotConnection
+                            },
+                        ]
+                    }]
+                }
+            );
 
+            cfg.MacroPads.Add(
+                new ModuloFiveConfiguration.MacroPad
+                {
+                    SerialId = Guid.NewGuid(),
+                    Nickname = MockTextGenerator.Generate(3),
+                    ProductId = Guid.NewGuid(),
+                    Version = new Version(6, 55, 35),
+                    Switches = [
+                        new ModuloFiveConfiguration.Switch {
+                            SwitchNumber = 0,
+                            Nickname = MockTextGenerator.Generate(3),
+                            SwitchMode = ModuloFiveConfiguration.SwitchMode.Momentary
+                        }
+                    ]
+                }
+            );
+
+            string inLinkageOnly = "in linkage only";
+            string inLinkageAndBotConnection = "in linkage and bot connection";
+
+            cfg.Linkages.Add(
+                new ModuloFiveConfiguration.Linkage
+                {
+                    BotActionId = cfg.Bots.Single().BotActions.Single().BotActionId!,
+                    BotActionName = cfg.Bots.Single().BotActions.Single().Name!,
+                    MacroPadSerialId = cfg.MacroPads.Single().SerialId,
+                    BotName = cfg.Bots.Single().Name!,
+                    SwitchNumber = cfg.MacroPads.Single().Switches.Single().SwitchNumber,
+                    TriggerState = ModuloFiveConfiguration.SwitchState.On,
+                    Arguments = [
+                        new ModuloFiveConfiguration.LinkageArgument {
+                            Name = inBotConfigAndLinkage,
+                            Value = MockTextGenerator.Generate(3)
+                        },
+                        new ModuloFiveConfiguration.LinkageArgument {
+                            Name = inBotConfigLinkageAndBotConnection,
+                            Value = MockTextGenerator.Generate(3)
+                        },
+                        new ModuloFiveConfiguration.LinkageArgument {
+                            Name = inLinkageOnly,
+                            Value = MockTextGenerator.Generate(3)
+                        },
+                        new ModuloFiveConfiguration.LinkageArgument {
+                            Name = inLinkageAndBotConnection,
+                            Value = MockTextGenerator.Generate(3)
+                        },
+                    ]
+                }
+            );
+
+            MockSwitchToggleWrapper wrp = new();
+            MockBotConnectionBuilder bld = new();
+
+            string inBotConnectionOnly = "in bot connection only";
+
+            MockBotConnection mockBotConnection =
+                new MockBotConnection
+                {
+                    BotName = cfg.Bots.Single().Name!,
+                    BotActions = [
+                        new ModuloFivePadClient.BotConnections.BotAction {
+                            BotActionId = cfg.Bots.Single().BotActions.Single().BotActionId,
+                            Name = MockTextGenerator.Generate(3),
+                            Parameters = [
+                                new ModuloFivePadClient.BotConnections.BotAction.Parameter {
+                                    Name = inBotConfigAndBotConnction
+                                },
+                                new ModuloFivePadClient.BotConnections.BotAction.Parameter {
+                                    Name = inBotConfigLinkageAndBotConnection
+                                },
+                                new ModuloFivePadClient.BotConnections.BotAction.Parameter {
+                                    Name = inLinkageAndBotConnection
+                                },
+                                new ModuloFivePadClient.BotConnections.BotAction.Parameter {
+                                    Name = inBotConnectionOnly
+                                },
+                            ]
+                        }
+                    ],
+                    ShouldInvocationSucceed = true
+                };
+
+            MockMacroPadConnection mpConn = new()
+            {
+                MacroPadVersion = cfg.MacroPads.Single().Version!,
+                ProductId = cfg.MacroPads.Single().ProductId!,
+                SerialId = cfg.MacroPads.Single().SerialId!
+            };
+
+            bool invoked = false;
+
+            mockBotConnection.OnMockInvokeAction += (invocationBotActionId, invocationBotArguments) =>
+            {
+                invocationBotActionId.Should().Be(cfg.Bots.Single().BotActions.Single().BotActionId);
+
+                var linkageArg1 = cfg.Linkages.Single().Arguments.Single(a => a.Name == inLinkageAndBotConnection);
+                var linkageArg2 = cfg.Linkages.Single().Arguments.Single(a => a.Name == inBotConfigLinkageAndBotConnection);
+
+                invocationBotArguments.Should().ContainEquivalentOf(linkageArg1);
+                invocationBotArguments.Should().ContainEquivalentOf(linkageArg2);
+
+                invocationBotArguments.Should().HaveCount(2);
+
+                invoked = true;
+            };
+
+            Runner runner = new(runnerLogger, wrp, [bld]);
+            runner.LoadConfiguration(cfg);
+            bld.DoBotConnected(mockBotConnection);
+
+            wrp.DoSwitchStateChanged(mpConn, new LogicalSwitchStateChangedArgs(
+                logicalSwitchState: SwitchState.On,
+                logicalSwitchStateChanged: true,
+                originalMessage: new SwitchStateChangeMessage(
+                    messageSource: ModuloFivePadClient.MacroPad.Serial.Messages.MessageSource.Pad,
+                    messageIdentifier: 1,
+                    switchNumber: (byte)cfg.MacroPads.Single().Switches.Single().SwitchNumber!,
+                    switchState: SwitchState.On
+                )
+            ));
+
+            invoked.Should().BeTrue();
+        }
     }
 
     [TestClass]

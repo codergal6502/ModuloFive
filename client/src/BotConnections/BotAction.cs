@@ -1,5 +1,6 @@
 namespace ModuloFivePadClient.BotConnections
 {
+    #warning evaluate nullity of these
     public class BotAction
     {
         public string? BotActionId { get; set; }
