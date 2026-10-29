@@ -7,6 +7,7 @@ using ModuloFivePadClient.RunnerCore;
 using ModuloFivePadClient.Utilities;
 using Serilog;
 using Serilog.Events;
+using static ModuloFivePadClient.Configuration.ModuloFiveConfigurationFileSystemService;
 
 public static class ServiceCollectionExtensions
 {
@@ -44,6 +45,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IModuloFivePadConfigurationProvider, ModuleFivePadApplicationDataJsonConfigurationProvider>()
             .AddSingleton<IRunner, Runner>()
             .AddSingleton<ISwitchToggleModeWrapper, SwitchToggleModeWrapper>()
+            .AddSingleton<IModuloFiveConfigurationFileSystemService, ModuloFiveConfigurationFileSystemService>()
+            .AddSingleton(PathAndFileNameSet.Default)
             .AddSingleton<Program>();
     }
 }

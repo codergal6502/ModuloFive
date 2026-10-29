@@ -260,7 +260,7 @@ namespace ModuloFivePadClient.BotConnections.Http
                 return BotActions;
             }
 
-            public async Task InvokeActionAsync(string? botActionId, IEnumerable<BotArgument> arguments)
+            public async Task<bool> InvokeActionAsync(string botActionId, IEnumerable<BotArgument> arguments)
             {
                 _logger.LogDebug("In {class}.{func}.", nameof(BotConnectionImpl), nameof(InvokeActionAsync));
 
@@ -280,7 +280,8 @@ namespace ModuloFivePadClient.BotConnections.Http
                     if (responseMessage.IsSuccessStatusCode)
                     {
                         _logger.LogDebug("In {class}.{func}, action suceeded.", nameof(BotConnectionImpl), nameof(InvokeActionAsync));
-                        this.ActionSuceeded?.Invoke(this);
+                        this.ActionSuceeded?.Invoke(this, botActionId);
+                        return true;
                     }
                     else
                     {
@@ -291,18 +292,20 @@ namespace ModuloFivePadClient.BotConnections.Http
                             responseMessage.StatusCode,
                             responseMessage.ReasonPhrase
                         );
-                        this.ActionFailed?.Invoke(this, new HttpActionFailureReason(responseMessage));
+                        this.ActionFailed?.Invoke(this, botActionId, new HttpActionFailureReason(responseMessage));
+                        return false;
                     }
                 }
                 catch (HttpRequestException ex)
                 {
-                    this.ActionFailed?.Invoke(this, new HttpActionFailureReason(ex));
+                    this.ActionFailed?.Invoke(this, botActionId, new HttpActionFailureReason(ex));
+                    return false;
                 }
             }
 
-            public void InvokeAction(string botActionId, IEnumerable<BotArgument> arguments)
+            public bool InvokeAction(string botActionId, IEnumerable<BotArgument> arguments)
             {
-                InvokeActionAsync(botActionId, arguments).GetAwaiter().GetResult();
+                return InvokeActionAsync(botActionId, arguments).GetAwaiter().GetResult();
             }
         }
     }

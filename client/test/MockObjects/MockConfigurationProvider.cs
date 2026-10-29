@@ -23,11 +23,10 @@ public class MockConfigurationProvider : IModuloFivePadConfigurationProvider
                     Name = b.Name,
                     Nickname = b.Nickname,
                     BotActions = [..b.BotActions.Select(ba => new ModuloFiveConfiguration.BotAction {
-                        Identifier = ba.Identifier,
+                        BotActionId = ba.BotActionId,
                         Name = ba.Name,
                         Parameters = [..ba.Parameters.Select(p => new ModuloFiveConfiguration.BotActionParameter {
                             Name = p.Name,
-                            Type = p.Type
                         })]
                     })]
                 }

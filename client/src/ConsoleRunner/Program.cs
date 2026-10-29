@@ -158,7 +158,7 @@ public class Program
 
     private ModuloFiveConfiguration.BotAction? GetBotAction(Bot? bot, string? actionId)
     {
-        return bot?.BotActions?.FirstOrDefault(a => a.Identifier == actionId);
+        return bot?.BotActions?.FirstOrDefault(a => a.BotActionId == actionId);
     }
 
     private void GetBotAndActionNicknames(string? botName, string? actionId, out string? botNickname, out string? actionName)

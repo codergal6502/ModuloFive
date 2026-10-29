@@ -65,7 +65,7 @@ namespace ModuloFivePadClient.DesktopClient.ViewModels
                     lvm.Arguments.Select(a => new BotActionArgumentViewModel { Name = a.Name, Value = a.Value, ParameterDeleted = false })
                 );
                 ConfigureLinkage.SelectedBot = ConfigureLinkage.BotChoices.FirstOrDefault(b => b.Name == lvm.BotName);
-                ConfigureLinkage.SelectedBotAction = ConfigureLinkage.SelectedBot?.ActionChoices?.Where(a => a.Identifier == lvm.BotActionId)?.FirstOrDefault();
+                ConfigureLinkage.SelectedBotAction = ConfigureLinkage.SelectedBot?.ActionChoices?.Where(a => a.BotActionId == lvm.BotActionId)?.FirstOrDefault();
                 ConfigureLinkage.SelectedMacroPad = ConfigureLinkage.MacroPadChoices.FirstOrDefault(mp => mp.SerialId == lvm.MacroPadSerialId);
                 ConfigureLinkage.SelectedSwitch = ConfigureLinkage.SelectedMacroPad?.SwitchChoices?.Where(s => s.SwitchNumberOneBased == lvm.SwitchNumberOneBased)?.FirstOrDefault();
                 ConfigureLinkage.SelectedSwitchState = lvm.TriggerState;
@@ -97,7 +97,7 @@ namespace ModuloFivePadClient.DesktopClient.ViewModels
                 linkageViewModel.TriggerState = ConfigureLinkage?.SelectedSwitchState;
 #warning bot nickname isn't used anywhere
                 linkageViewModel.BotName = ConfigureLinkage?.SelectedBot?.Name;
-                linkageViewModel.BotActionId = ConfigureLinkage?.SelectedBotAction?.Identifier ?? string.Empty;
+                linkageViewModel.BotActionId = ConfigureLinkage?.SelectedBotAction?.BotActionId ?? string.Empty;
                 linkageViewModel.BotActionName = ConfigureLinkage?.SelectedBotAction?.Name;
 
                 linkageViewModel.Arguments.RemoveAll();

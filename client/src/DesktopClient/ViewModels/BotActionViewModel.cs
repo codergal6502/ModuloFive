@@ -22,7 +22,7 @@ namespace ModuloFivePadClient.DesktopClient.ViewModels
             if (original != null)
             {
                 _name = original.Name;
-                _identifier = original.Identifier;
+                _identifier = original.BotActionId;
                 if (original.Parameters != null)
                 {
                     Parameters = [.. original.Parameters.Select(a => new BotActionParameterViewModel(a))];
@@ -40,10 +40,10 @@ namespace ModuloFivePadClient.DesktopClient.ViewModels
         }
 
         private string? _identifier;
-        public string? Identifier
+        public string? BotActionId
         {
             get => _identifier;
-            set { if (_identifier == value) return; _identifier = value; OnPropertyChanged(nameof(Identifier)); }
+            set { if (_identifier == value) return; _identifier = value; OnPropertyChanged(nameof(BotActionId)); }
         }
     }
 }

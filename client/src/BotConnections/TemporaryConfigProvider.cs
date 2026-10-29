@@ -19,7 +19,7 @@ namespace ModuloFivePadClient.BotConnections
 """,
                         ActionListRelativeUrl = "api/v1/effects/preset",
                         ActionListTransform = """
-$.{ "Identifier": id, "Name": name, "Parameters": [args.{ "Name": $, "Type": "string" }] }
+$.{ "BotActionId": id, "Name": name, "Parameters": [args.{ "Name": $, "Type": "string" }] }
 """,
                         ActionInvocationRelativeUrlFormatString = "api/v1/effects/preset/{0}",
                         ActionInvocationRequestTransform = """

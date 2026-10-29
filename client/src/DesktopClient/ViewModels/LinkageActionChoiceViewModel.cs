@@ -15,7 +15,7 @@ namespace ModuloFivePadClient.DesktopClient.ViewModels
         public LinkageActionChoiceViewModel(BotAction original) : this()
         {
             _name = original.Name ?? string.Empty;
-            _identifier = original.Identifier ?? string.Empty;
+            _identifier = original.BotActionId ?? string.Empty;
         }
 
         private string _name;
@@ -26,10 +26,10 @@ namespace ModuloFivePadClient.DesktopClient.ViewModels
         }
 
         private string _identifier;
-        public string Identifier
+        public string BotActionId
         {
             get => _identifier;
-            set { if (_identifier == value) return; _identifier = value; OnPropertyChanged(nameof(Identifier)); }
+            set { if (_identifier == value) return; _identifier = value; OnPropertyChanged(nameof(BotActionId)); }
         }
 
         public ObservableCollection<LinkageParameterViewModel> Parameters { get;}

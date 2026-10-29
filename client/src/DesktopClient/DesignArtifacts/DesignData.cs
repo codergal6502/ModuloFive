@@ -163,7 +163,7 @@ namespace ModuloFivePadClient.DesktopClient.DesignArtifacts
                             ((Func<BotActionViewModel>)(() => {
                                 var result = new BotActionViewModel {
                                     Name = "Mark Timestamp"
-                                  , Identifier = "d7b18e37-bed7-4c8b-94c0-2448192ef1b9"
+                                  , BotActionId = "d7b18e37-bed7-4c8b-94c0-2448192ef1b9"
                                 };
 
                                 result.Parameters.AddRange([ new BotActionParameterViewModel {
@@ -175,17 +175,15 @@ namespace ModuloFivePadClient.DesktopClient.DesignArtifacts
                             ((Func<BotActionViewModel>)(() => {
                                 var result = new BotActionViewModel {
                                     Name = "Disable Noisy Effects Queue"
-                                  , Identifier = "bdac3c31-fbc3-4284-80ab-b1a51578fb36"
+                                  , BotActionId = "bdac3c31-fbc3-4284-80ab-b1a51578fb36"
                                 };
 
                                 result.Parameters.AddRange([
                                     new BotActionParameterViewModel {
                                         Name = "Delay",
-                                        Type = null
                                     },
                                     new BotActionParameterViewModel {
                                         Name = "Interrupt",
-                                        Type = null
                                     }
                                 ]);
 
@@ -194,7 +192,7 @@ namespace ModuloFivePadClient.DesktopClient.DesignArtifacts
                             ((Func<BotActionViewModel>)(() => {
                                 var result = new BotActionViewModel {
                                     Name = "Enable Noisy Effects Queue"
-                                  , Identifier = "ad356fa8-9dca-4b35-9ae0-6b83bf375690"
+                                  , BotActionId = "ad356fa8-9dca-4b35-9ae0-6b83bf375690"
                                 };
 
                                 return result;
@@ -344,7 +342,7 @@ namespace ModuloFivePadClient.DesktopClient.DesignArtifacts
                             {
                                 var result = new LinkageActionChoiceViewModel{
                                     Name = "Mark Timestamp",
-                                    Identifier = "8201e995-0070-4051-801f-7aced0118998"
+                                    BotActionId = "8201e995-0070-4051-801f-7aced0118998"
                                 };
 
                                 result.Parameters.AddRange([
@@ -362,7 +360,7 @@ namespace ModuloFivePadClient.DesktopClient.DesignArtifacts
                             {
                                 var result = new LinkageActionChoiceViewModel{
                                     Name = "Disable Noisy Effects Queue",
-                                    Identifier = "f727593f-0cf7-4a62-acc7-248af6b10900"
+                                    BotActionId = "f727593f-0cf7-4a62-acc7-248af6b10900"
                                 };
 
                                 result.Parameters.AddRange([
@@ -378,7 +376,7 @@ namespace ModuloFivePadClient.DesktopClient.DesignArtifacts
                             }))(),
                             new LinkageActionChoiceViewModel{
                                 Name = "Enable Noisy Effects Queue",
-                                Identifier = "27831e4c-b946-4661-b857-2456c83b5647"
+                                BotActionId = "27831e4c-b946-4661-b857-2456c83b5647"
                             }
                         ]);
 

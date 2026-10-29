@@ -126,12 +126,12 @@ public sealed class ConfigurationFileSystemService
                         BotActions     =  [
                             new ModuloFiveConfiguration.BotAction {
                                 Name =  botActionName1,
-                                Identifier =  botActionId1,
+                                BotActionId =  botActionId1,
                                 Parameters =  []
                             },
                             new ModuloFiveConfiguration.BotAction {
                                 Name = botActionName2,
-                                Identifier = botActionId2,
+                                BotActionId = botActionId2,
                                 Parameters = [
                                     new ModuloFiveConfiguration.BotActionParameter {
                                     Name = botParameters2a,
@@ -251,12 +251,12 @@ public sealed class ConfigurationFileSystemService
                         BotActions     =  [
                             new ModuloFiveConfiguration.BotAction {
                                 Name =  botActionName1,
-                                Identifier =  botActionId1,
+                                BotActionId =  botActionId1,
                                 Parameters =  []
                             },
                             new ModuloFiveConfiguration.BotAction {
                                 Name = botActionName2,
-                                Identifier = botActionId2,
+                                BotActionId = botActionId2,
                                 Parameters = [
                                     new ModuloFiveConfiguration.BotActionParameter {
                                     Name = botParameters2a,

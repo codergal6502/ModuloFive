@@ -6,7 +6,7 @@ namespace MockObjects;
 public class MockBotConnection : IBotConnection
 {
     public string BotName { get; set; } = string.Empty;
-    public bool ShouldInvocationFail { get; set; } = false;
+    public bool ShouldInvocationSucceed { get; set; } = true;
 
     public IList<BotAction> BotActions { get; set; } = [];
 
@@ -25,16 +25,18 @@ public class MockBotConnection : IBotConnection
     }
 
 #warning no failure?
-    public void InvokeAction(string botActionId, IEnumerable<BotArgument> arguments)
+    public bool InvokeAction(string botActionId, IEnumerable<BotArgument> arguments)
     {
         OnMockInvokeAction?.Invoke(botActionId, arguments);
-        if (ShouldInvocationFail)
+        if (ShouldInvocationSucceed)
         {
-            ActionFailed?.Invoke(this, new MockActionFailureReason());
+            ActionSuceeded?.Invoke(this, botActionId);
+            return true;
         }
         else
         {
-            ActionSuceeded?.Invoke(this);
+            ActionFailed?.Invoke(this, botActionId, new MockActionFailureReason());
+            return false;
         }
     }
 

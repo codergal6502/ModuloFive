@@ -11,12 +11,10 @@ namespace ModuloFivePadClient.DesktopClient.ViewModels
         public BotActionParameterViewModel(BotActionParameterViewModel original)
         {
             _name = original.Name;
-            _type = original.Type;
         }
         public BotActionParameterViewModel(BotAction.Parameter original)
         {
             _name = original.Name;
-            _type = original.Type;
         }
 
         private string? _name;
@@ -24,13 +22,6 @@ namespace ModuloFivePadClient.DesktopClient.ViewModels
         {
             get => _name;
             set { if (_name == value) return; _name = value; OnPropertyChanged(nameof(Name)); }
-        }
-
-        private string? _type;
-        public string? Type
-        {
-            get => _type;
-            set { if (_type == value) return; _type = value; OnPropertyChanged(nameof(Type)); }
         }
     }
 }

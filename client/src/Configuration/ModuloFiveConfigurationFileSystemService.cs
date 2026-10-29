@@ -2,7 +2,6 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using ModuloFivePadClient.Configuration.Json;
 using ModuloFivePadClient.Utilities;
-using static System.Environment;
 
 namespace ModuloFivePadClient.Configuration
 {

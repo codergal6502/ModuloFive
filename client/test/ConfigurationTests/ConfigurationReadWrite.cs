@@ -49,7 +49,7 @@ public sealed class ConfigurationReadWrite
                 Nickname = "Consectetur adipiscing elit",
                 BotActions = [
                     new ModuloFiveConfiguration.BotAction {
-                        Identifier = "c9ea2ad5-4fcf-4338-a18d-96af78773837",
+                        BotActionId = "c9ea2ad5-4fcf-4338-a18d-96af78773837",
                         Name = "Sed do eiusmod tempor",
                         Parameters = [
                             new ModuloFiveConfiguration.BotActionParameter {
@@ -87,7 +87,7 @@ public sealed class ConfigurationReadWrite
                     Nickname = "Ut enim ad minim veniam",
                     BotActions = [
                         new ModuloFiveConfiguration.BotAction {
-                            Identifier = "69513a79-70d8-4b6d-8728-a4ff36994e05",
+                            BotActionId = "69513a79-70d8-4b6d-8728-a4ff36994e05",
                             Name = "Auis nostrud exercitation",
                             Parameters = [
                                 new ModuloFiveConfiguration.BotActionParameter {
@@ -197,7 +197,7 @@ public sealed class ConfigurationReadWrite
                     Nickname = "Ut enim ad minim veniam",
                     BotActions = [
                         new ModuloFiveConfiguration.BotAction {
-                            Identifier = botActionId,
+                            BotActionId = botActionId,
                             Name = botActionName,
                             Parameters = [
                                 new ModuloFiveConfiguration.BotActionParameter {
@@ -350,7 +350,7 @@ public sealed class ConfigurationReadWrite
                     Name = "In voluptate velit esse cillum dolore",
                     BotActions = [
                         new ModuloFiveConfiguration.BotAction {
-                            Identifier = "\r   \t\n \t",
+                            BotActionId = "\r   \t\n \t",
                             Name = "eu fugiat nulla pariatur",
                         }
                     ]
@@ -359,7 +359,7 @@ public sealed class ConfigurationReadWrite
 
             provider
                 .Invoking(cp => cp.UpdateConfiguration(invalidCfg, ConfigurationPersistenceMode.Immediate))
-                .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.BotAction)}.{nameof(ModuloFiveConfiguration.BotAction.Identifier)} is invalid.");
+                .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.BotAction)}.{nameof(ModuloFiveConfiguration.BotAction.BotActionId)} is invalid.");
         }
 
         [TestMethod]
@@ -379,7 +379,7 @@ public sealed class ConfigurationReadWrite
                     Name = "In voluptate velit esse cillum dolore",
                     BotActions = [
                         new ModuloFiveConfiguration.BotAction {
-                            Identifier = null,
+                            BotActionId = null,
                             Name = "eu fugiat nulla pariatur",
                         }
                     ]
@@ -388,7 +388,7 @@ public sealed class ConfigurationReadWrite
 
             provider
                 .Invoking(cp => cp.UpdateConfiguration(invalidCfg, ConfigurationPersistenceMode.Immediate))
-                .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.BotAction)}.{nameof(ModuloFiveConfiguration.BotAction.Identifier)} is invalid.");
+                .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.BotAction)}.{nameof(ModuloFiveConfiguration.BotAction.BotActionId)} is invalid.");
         }
 
         [TestMethod]
@@ -408,7 +408,7 @@ public sealed class ConfigurationReadWrite
                     Name = "In voluptate velit esse cillum dolore",
                     BotActions = [
                         new ModuloFiveConfiguration.BotAction {
-                            Identifier = "39623ab7-e579-4737-89d5-efbb37b9d52e",
+                            BotActionId = "39623ab7-e579-4737-89d5-efbb37b9d52e",
                             Name = "\r   \t\n \t"
                         }
                     ]
@@ -437,7 +437,7 @@ public sealed class ConfigurationReadWrite
                     Name = "In voluptate velit esse cillum dolore",
                     BotActions = [
                         new ModuloFiveConfiguration.BotAction {
-                            Identifier = "11124c48-58ad-42c0-b01b-0703991aab01",
+                            BotActionId = "11124c48-58ad-42c0-b01b-0703991aab01",
                             Name = null
                         }
                     ]
@@ -448,121 +448,6 @@ public sealed class ConfigurationReadWrite
                 .Invoking(cp => cp.UpdateConfiguration(invalidCfg, ConfigurationPersistenceMode.Immediate))
                 .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.BotAction)}.{nameof(ModuloFiveConfiguration.BotAction.Name)} is invalid.");
         }
-
-        [TestMethod]
-        public void UpdateConfiguration_NullMacroPadSerialId()
-        {
-            var cfgFsSvc = new MockConfigurationFileSystemService
-            {
-                MockConfigurationFileExists = () => true,
-                MockReadConfiguration = () => new ModuloFiveConfiguration()
-            };
-
-            ConcreteProvider provider = new(providerLogger, cfgFsSvc);
-
-            var invalidCfg = new ModuloFiveConfiguration
-            {
-                MacroPads = [
-                    new ModuloFiveConfiguration.MacroPad {
-                        Nickname = "Proin in diam quam",
-                        ProductId = new Guid("472b6e77-3262-4375-9d4e-66437bc0399a"),
-                        SerialId = Guid.Empty,
-                        Version = new Version(6, 50, 2),
-                        Switches = []
-                    }
-                ]
-            };
-
-            provider
-                .Invoking(cp => cp.UpdateConfiguration(invalidCfg, ConfigurationPersistenceMode.Immediate))
-                .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null {nameof(ModuloFiveConfiguration.MacroPad)}.{nameof(ModuloFiveConfiguration.MacroPad.SerialId)} is invalid.");
-        }
-
-        // [TestMethod]
-        // public void UpdateConfiguration_NullMacroPadVersion()
-        // {
-        //     var cfgFsSvc = new MockConfigurationFileSystemService
-        //     {
-        //         MockConfigurationFileExists = () => true,
-        //         MockReadConfiguration = () => new ModuloFiveConfiguration()
-        //     };
-
-        //     ConcreteProvider provider = new(providerLogger, cfgFsSvc);
-
-        //     var invalidCfg = new ModuloFiveConfiguration
-        //     {
-        //         MacroPads = [
-        //             new ModuloFiveConfiguration.MacroPad {
-        //                 Nickname = "Proin in diam quam",
-        //                 ProductId = new Guid("ac20c16e-0a08-4e0f-8538-ad61d5ebdbc0"),
-        //                 SerialId = new Guid("bd08d540-3684-47ff-bd37-215f30616400"),
-        //                 Version = null
-        //             }
-        //         ]
-        //     };
-
-        //     provider
-        //         .Invoking(cp => cp.UpdateConfiguration(invalidCfg, ConfigurationPersistenceMode.Immediate))
-        //         .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null {nameof(ModuloFiveConfiguration.MacroPad)}.{nameof(ModuloFiveConfiguration.MacroPad.Version)} is invalid.");
-        // }
-
-        // [TestMethod]
-        // public void UpdateConfiguration_NullMacroPadProductId()
-        // {
-        //     var cfgFsSvc = new MockConfigurationFileSystemService
-        //     {
-        //         MockConfigurationFileExists = () => true,
-        //         MockReadConfiguration = () => new ModuloFiveConfiguration()
-        //     };
-
-        //     ConcreteProvider provider = new(providerLogger, cfgFsSvc);
-
-        //     var invalidCfg = new ModuloFiveConfiguration
-        //     {
-        //         MacroPads = [
-        //             new ModuloFiveConfiguration.MacroPad {
-        //                 Nickname = "Proin in diam quam",
-        //                 ProductId = null,
-        //                 SerialId = new Guid("bd08d540-3684-47ff-bd37-215f30616400"),
-        //                 Version = new Version(6, 0, 4)
-        //             }
-        //         ]
-        //     };
-
-        //     provider
-        //         .Invoking(cp => cp.UpdateConfiguration(invalidCfg, ConfigurationPersistenceMode.Immediate))
-        //         .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null {nameof(ModuloFiveConfiguration.MacroPad)}.{nameof(ModuloFiveConfiguration.MacroPad.ProductId)} is invalid.");
-        // }
-
-        // [TestMethod]
-        // public void UpdateConfiguration_NullLinkageBotActionId()
-        // {
-        //     var cfgFsSvc = new MockConfigurationFileSystemService
-        //     {
-        //         MockConfigurationFileExists = () => true,
-        //         MockReadConfiguration = () => new ModuloFiveConfiguration()
-        //     };
-
-        //     ConcreteProvider provider = new(providerLogger, cfgFsSvc);
-
-        //     var invalidCfg = new ModuloFiveConfiguration
-        //     {
-        //         Linkages = [
-        //             new ModuloFiveConfiguration.Linkage {
-        //                 BotActionId = null,
-        //                 BotActionName = "Nam eget vestibulum justo",
-        //                 BotName = "ut dictum dolor",
-        //                 MacroPadSerialId = new Guid("f3cdaf1c-3203-4f50-ac81-96e924d4034d"),
-        //                 SwitchNumber = 0,
-        //                 TriggerState = ModuloFiveConfiguration.SwitchState.Changed,
-        //             }
-        //         ]
-        //     };
-
-        //     provider
-        //         .Invoking(cp => cp.UpdateConfiguration(invalidCfg, ConfigurationPersistenceMode.Immediate))
-        //         .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.BotActionId)} is invalid.");
-        // }
 
         [TestMethod]
         public void UpdateConfiguration_WhitespaceLinkageBotActionId()
@@ -718,134 +603,6 @@ public sealed class ConfigurationReadWrite
                 .Invoking(cp => cp.UpdateConfiguration(invalidCfg, ConfigurationPersistenceMode.Immediate))
                 .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.BotName)} is invalid.");
         }
-
-        // [TestMethod]
-        // public void UpdateConfiguration_NullLinkageMacroPadSerialId()
-        // {
-        //     var cfgFsSvc = new MockConfigurationFileSystemService
-        //     {
-        //         MockConfigurationFileExists = () => true,
-        //         MockReadConfiguration = () => new ModuloFiveConfiguration()
-        //     };
-
-        //     ConcreteProvider provider = new(providerLogger, cfgFsSvc);
-
-        //     var invalidCfg = new ModuloFiveConfiguration
-        //     {
-        //         Linkages = [
-        //             new ModuloFiveConfiguration.Linkage {
-        //                 BotActionId = "ba3b64fb-5457-45ea-993f-4b63e9b7f2a8",
-        //                 BotActionName = "ut dictum dolor",
-        //                 BotName = "In hac habitasse platea dictumst",
-        //                 MacroPadSerialId = null,
-        //                 SwitchNumber = 0,
-        //                 TriggerState = ModuloFiveConfiguration.SwitchState.Changed,
-        //                 Arguments = [],
-        //             }
-        //         ]
-        //     };
-
-        //     provider
-        //         .Invoking(cp => cp.UpdateConfiguration(invalidCfg, ConfigurationPersistenceMode.Immediate))
-        //         .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.MacroPadSerialId)} is invalid.");
-        // }
-
-        [TestMethod]
-        public void UpdateConfiguration_NullLinkageSwitchNumber()
-        {
-            var cfgFsSvc = new MockConfigurationFileSystemService
-            {
-                MockConfigurationFileExists = () => true,
-                MockReadConfiguration = () => new ModuloFiveConfiguration()
-            };
-
-            ConcreteProvider provider = new(providerLogger, cfgFsSvc);
-
-            var invalidCfg = new ModuloFiveConfiguration
-            {
-                Linkages = [
-                    new ModuloFiveConfiguration.Linkage {
-                        BotActionId = "ba3b64fb-5457-45ea-993f-4b63e9b7f2a8",
-                        BotActionName = "ut dictum dolor",
-                        BotName = "In hac habitasse platea dictumst",
-                        MacroPadSerialId = new Guid("95f94d94-f978-4bff-bf90-c936a46b2ddd"),
-                        SwitchNumber = 0,
-                        TriggerState = ModuloFiveConfiguration.SwitchState.Changed,
-                        Arguments = []
-                    }
-                ]
-            };
-
-            provider
-                .Invoking(cp => cp.UpdateConfiguration(invalidCfg, ConfigurationPersistenceMode.Immediate))
-                .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.SwitchNumber)} is invalid.");
-        }
-
-        // [TestMethod]
-        // public void UpdateConfiguration_NullLinkageSwitchTriggerState()
-        // {
-        //     var cfgFsSvc = new MockConfigurationFileSystemService
-        //     {
-        //         MockConfigurationFileExists = () => true,
-        //         MockReadConfiguration = () => new ModuloFiveConfiguration()
-        //     };
-
-        //     ConcreteProvider provider = new(providerLogger, cfgFsSvc);
-
-        //     var invalidCfg = new ModuloFiveConfiguration
-        //     {
-        //         Linkages = [
-        //             new ModuloFiveConfiguration.Linkage {
-        //                 BotActionId = "ba3b64fb-5457-45ea-993f-4b63e9b7f2a8",
-        //                 BotActionName = "ut dictum dolor",
-        //                 BotName = "In hac habitasse platea dictumst",
-        //                 MacroPadSerialId = new Guid("95f94d94-f978-4bff-bf90-c936a46b2ddd"),
-        //                 SwitchNumber = 1,
-        //                 TriggerState = null,
-        //             }
-        //         ]
-        //     };
-
-        //     provider
-        //         .Invoking(cp => cp.UpdateConfiguration(invalidCfg, ConfigurationPersistenceMode.Immediate))
-        //         .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null {nameof(ModuloFiveConfiguration.Linkage)}.{nameof(ModuloFiveConfiguration.Linkage.TriggerState)} is invalid.");
-        // }
-
-        // [TestMethod]
-        // public void UpdateConfiguration_NullLinkageArgumentName()
-        // {
-        //     var cfgFsSvc = new MockConfigurationFileSystemService
-        //     {
-        //         MockConfigurationFileExists = () => true,
-        //         MockReadConfiguration = () => new ModuloFiveConfiguration()
-        //     };
-
-        //     ConcreteProvider provider = new(providerLogger, cfgFsSvc);
-
-        //     var invalidCfg = new ModuloFiveConfiguration
-        //     {
-        //         Linkages = [
-        //             new ModuloFiveConfiguration.Linkage {
-        //                 BotActionId = "ba3b64fb-5457-45ea-993f-4b63e9b7f2a8",
-        //                 BotActionName = "ut dictum dolor",
-        //                 BotName = "In hac habitasse platea dictumst",
-        //                 MacroPadSerialId = new Guid("95f94d94-f978-4bff-bf90-c936a46b2ddd"),
-        //                 SwitchNumber = 1,
-        //                 TriggerState = ModuloFiveConfiguration.SwitchState.Off,
-        //                 Arguments = [
-        //                     new ModuloFiveConfiguration.LinkageArgument {
-        //                         Name = null,
-        //                         Value = "Nam dapibus, magna at porta scelerisque"
-        //                     }
-        //                 ]
-        //             }
-        //         ]
-        //     };
-
-        //     provider
-        //         .Invoking(cp => cp.UpdateConfiguration(invalidCfg, ConfigurationPersistenceMode.Immediate))
-        //         .Should().Throw<ModuloFiveConfigurationException>().WithMessage($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.LinkageArgument)}.{nameof(ModuloFiveConfiguration.LinkageArgument.Name)} is invalid.");
-        // }
 
         [TestMethod]
         public void UpdateConfiguration_WhitespaceLinkageArgumentName()

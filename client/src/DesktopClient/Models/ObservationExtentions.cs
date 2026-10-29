@@ -214,7 +214,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
                     {
                         var actionVm = new BotActionViewModel
                         {
-                            Identifier = cfgAction.Identifier,
+                            BotActionId = cfgAction.BotActionId,
                             Name = cfgAction.Name,
                         };
 
@@ -225,7 +225,6 @@ namespace ModuloFivePadClient.DesktopClient.Models
                                 actionVm.Parameters.Add(new BotActionParameterViewModel
                                 {
                                     Name = param.Name,
-                                    Type = param.Type
                                 });
                             }
                         }
@@ -290,7 +289,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
                     var newActionChoiceVm = new LinkageActionChoiceViewModel
                     {
                         Name = cfgAction.Name ?? String.Empty,
-                        Identifier = cfgAction.Identifier ?? String.Empty,
+                        BotActionId = cfgAction.BotActionId ?? String.Empty,
                     };
                     newBotChoiceVm.ActionChoices.Add(newActionChoiceVm);
 

@@ -4,23 +4,32 @@ namespace ModuloFivePadClient.RunnerCore
 {
     public class RunnerLinkageArgument
     {
-        public RunnerLinkageArgument(ModuloFiveConfiguration.LinkageArgument argument)
+        #warning FOLLOW THIS PATTERN
+        public static RunnerLinkageArgument From(ModuloFiveConfiguration.LinkageArgument argument)
         {
             if (string.IsNullOrWhiteSpace(argument.Name))
             {
-                this.Invalid = true;
-                this.Name = string.Empty;
+                return new RunnerLinkageArgument
+                {
+                    Invalid = true,
+                    Name = string.Empty,
+                };
             }
             else
             {
-                this.Invalid = false;
-                this.Name = argument.Name;
-                this.Value = argument.Value;
+                return new RunnerLinkageArgument
+                {
+                    Invalid = false,
+                    Name = argument.Name,
+                    Value = argument.Value,
+                };
             }
         }
 
-        public string Name { get; set; }
+        public RunnerLinkageArgument() { }
+
+        public required string Name { get; set; }
         public string? Value { get; set; }
-        public bool Invalid { get; }
+        public bool Invalid { get; private set; }
     }
 }

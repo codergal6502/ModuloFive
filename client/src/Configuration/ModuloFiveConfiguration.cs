@@ -14,6 +14,6 @@ namespace ModuloFivePadClient.Configuration
         public List<MacroPad> MacroPads { get; set; } = [];
         public bool ShowTechnicalInfo { get; set; } = false;
         public List<Bot> Bots { get; set; } = [];
-        public IEnumerable<Linkage> Linkages { get; set; } = [];
+        public List<Linkage> Linkages { get; set; } = [];
     }
 }

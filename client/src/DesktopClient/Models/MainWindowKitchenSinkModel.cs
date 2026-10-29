@@ -82,7 +82,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
                 var padSwitch = macroPad?.Switches?.FirstOrDefault(s => s.SwitchNumberOneBased == args.Linkage.SwitchNumber + 1);
 
                 var bot = this.MainWindowViewModel.BotActions.Bots.FirstOrDefault(b => b.Name == args.Linkage.BotName);
-                var botAction = bot?.BotActions?.FirstOrDefault(a => a.Identifier == args.Linkage.BotActionId);
+                var botAction = bot?.BotActions?.FirstOrDefault(a => a.BotActionId == args.Linkage.BotActionId);
 
                 if (macroPad != null && padSwitch != null && bot != null && botAction != null)
                 {
@@ -217,23 +217,23 @@ namespace ModuloFivePadClient.DesktopClient.Models
             {
                 foreach (var retrievdAction in retrievedBotActions)
                 {
-                    var matchingBotActionVms = matchingBotVm.BotActions.Where(ba => ba.Identifier == retrievdAction.Identifier);
+                    var matchingBotActionVms = matchingBotVm.BotActions.Where(ba => ba.BotActionId == retrievdAction.BotActionId);
                     var matchingBotActionVm =
                         matchingBotActionVms.CheckAndLogTwoIsTooMany(nameof(matchingBotActionVms), _logger);
 
                     if (null == matchingBotActionVm)
                     {
-                        this._logger.LogDebug("In {class}.{method}, creating bot action {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Identifier, retrievdAction.Name, typeof(BotActionViewModel));
+                        this._logger.LogDebug("In {class}.{method}, creating bot action {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.BotActionId, retrievdAction.Name, typeof(BotActionViewModel));
 
                         matchingBotActionVm = new BotActionViewModel(retrievdAction);
                         matchingBotVm.BotActions.Add(matchingBotActionVm);
                     }
                     else
                     {
-                        this._logger.LogDebug("In {class}.{method}, updating bot action {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Identifier, retrievdAction.Name, typeof(BotActionViewModel));
+                        this._logger.LogDebug("In {class}.{method}, updating bot action {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.BotActionId, retrievdAction.Name, typeof(BotActionViewModel));
 
                         matchingBotActionVm.Name = retrievdAction.Name;
-                        matchingBotActionVm.Identifier = retrievdAction.Identifier;
+                        matchingBotActionVm.BotActionId = retrievdAction.BotActionId;
                     }
 
                     if (null != retrievdAction.Parameters)
@@ -252,13 +252,9 @@ namespace ModuloFivePadClient.DesktopClient.Models
                                 matchingArgumentVm = new BotActionParameterViewModel(retreivedArgument);
                                 matchingBotActionVm.Parameters.Add(matchingArgumentVm);
                             }
-                            else
-                            {
-                                matchingArgumentVm.Type = retreivedArgument.Type;
-                            }
                         }
 
-                        this._logger.LogDebug("In {class}.{method}, synchronized {parameterCount} parameters into arguments for {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Parameters, retrievdAction.Identifier, retrievdAction.Name, typeof(BotActionParameterViewModel));
+                        this._logger.LogDebug("In {class}.{method}, synchronized {parameterCount} parameters into arguments for {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Parameters, retrievdAction.BotActionId, retrievdAction.Name, typeof(BotActionParameterViewModel));
                     }
                 }
             }
@@ -288,17 +284,17 @@ namespace ModuloFivePadClient.DesktopClient.Models
 
                     if (null == matchingBotActionVm)
                     {
-                        this._logger.LogDebug("In {class}.{method}, creating bot action {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Identifier, retrievdAction.Name, typeof(LinkageActionChoiceViewModel));
+                        this._logger.LogDebug("In {class}.{method}, creating bot action {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.BotActionId, retrievdAction.Name, typeof(LinkageActionChoiceViewModel));
 
                         matchingBotActionVm = new LinkageActionChoiceViewModel(retrievdAction);
                         matchingBotVm.ActionChoices.Add(matchingBotActionVm);
                     }
                     else
                     {
-                        this._logger.LogDebug("In {class}.{method}, updating bot action {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Identifier, retrievdAction.Name, typeof(LinkageActionChoiceViewModel));
+                        this._logger.LogDebug("In {class}.{method}, updating bot action {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.BotActionId, retrievdAction.Name, typeof(LinkageActionChoiceViewModel));
 
                         matchingBotActionVm.Name = retrievdAction.Name ?? string.Empty;
-                        matchingBotActionVm.Identifier = retrievdAction.Identifier ?? string.Empty;
+                        matchingBotActionVm.BotActionId = retrievdAction.BotActionId ?? string.Empty;
                     }
 
                     if (null != retrievdAction.Parameters)
@@ -319,7 +315,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
                             }
                         }
 
-                        this._logger.LogDebug("In {class}.{method}, synchronized {parameterCount} parameters into arguments for {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Parameters, retrievdAction.Identifier, retrievdAction.Name, typeof(LinkageParameterViewModel));
+                        this._logger.LogDebug("In {class}.{method}, synchronized {parameterCount} parameters into arguments for {botActionId} ({botActionName}) as {viewModelType}.", nameof(MainWindowKitchenSinkModel), nameof(PopulateBotChoices), retrievdAction.Parameters, retrievdAction.BotActionId, retrievdAction.Name, typeof(LinkageParameterViewModel));
                     }
                 }
             }
@@ -332,7 +328,7 @@ namespace ModuloFivePadClient.DesktopClient.Models
             linkagesViewModel.HasErrors = false;
             foreach (var linkageVm in linkagesViewModel.Linkages.Where(l => l.BotName == sender.BotName))
             {
-                var matchingRetrievedBotActions = retrievedBotActions.Where(ba => ba.Identifier == linkageVm.BotActionId);
+                var matchingRetrievedBotActions = retrievedBotActions.Where(ba => ba.BotActionId == linkageVm.BotActionId);
                 var matchingRetrievedBotAction = matchingRetrievedBotActions.CheckAndLogTwoIsTooMany(nameof(matchingRetrievedBotActions), _logger);
 
                 if (matchingRetrievedBotAction == null)
@@ -564,12 +560,11 @@ namespace ModuloFivePadClient.DesktopClient.Models
                             Nickname = b.Nickname,
                             BotActions = b.BotActions.Select(a => new ModuloFiveConfiguration.BotAction
                             {
-                                Identifier = a.Identifier,
+                                BotActionId = a.BotActionId,
                                 Name = a.Name,
                                 Parameters = a.Parameters.Select(p => new ModuloFiveConfiguration.BotActionParameter
                                 {
                                     Name = p.Name,
-                                    Type = p.Type
                                 }).ToArray()
                             }).ToArray()
                         })

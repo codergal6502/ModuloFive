@@ -49,14 +49,10 @@ namespace ModuloFivePadClient.RunnerCore
             {
                 foreach (var linkage in _runnerLinkages)
                 {
-                    bool doRun = false;
-                    doRun |= linkage.TriggerState == SwitchState.Changed;
-                    doRun |= linkage.TriggerState == SwitchState.On && args.LogicalSwitchState == SwitchState.On;
-                    doRun |= linkage.TriggerState == SwitchState.Off && args.LogicalSwitchState == SwitchState.Off;
-
-                    _logger.LogDebug("{triggerStateName} = {triggerStateValue}; ", nameof(linkage.TriggerState), linkage.TriggerState);
-
-                    if (doRun)
+                    if (
+                        (linkage.MacroPadSerialId == macroPad.SerialId)
+                     && (linkage.SwitchNumber == args.OriginalMessage.SwitchNumber)
+                    )
                     {
                         var bots = _bots.Where(b => b.BotName == linkage.BotName);
                         var bot = bots.CheckAndLogTwoIsTooMany(nameof(bots), _logger);
@@ -67,10 +63,23 @@ namespace ModuloFivePadClient.RunnerCore
                             break;
                         }
 
-                        if (
-                            (linkage.MacroPadSerialId == macroPad.SerialId)
-                         && (linkage.SwitchNumber == args.OriginalMessage.SwitchNumber)
-                        )
+                        var botActions = bot.BotActions.Where(ba => ba.BotActionId == linkage.BotActionId);
+                        var botAction = botActions.CheckAndLogTwoIsTooMany(nameof(botActions), _logger);
+
+                        if (botAction == null)
+                        {
+                            _logger.LogWarning("In {class}.{func}, bot {botName} is missing action {botActionId}.", nameof(Runner), nameof(SwitchStateChanged), linkage.BotName, linkage.BotActionId);
+                            break;
+                        }
+
+                        bool doRun = false;
+                        doRun |= linkage.TriggerState == SwitchState.Changed;
+                        doRun |= linkage.TriggerState == SwitchState.On && args.LogicalSwitchState == SwitchState.On;
+                        doRun |= linkage.TriggerState == SwitchState.Off && args.LogicalSwitchState == SwitchState.Off;
+
+                        _logger.LogDebug("{triggerStateName} = {triggerStateValue}; ", nameof(linkage.TriggerState), linkage.TriggerState);
+
+                        if (doRun)
                         {
                             List<BotArgument> arguments = [];
 
@@ -91,9 +100,10 @@ namespace ModuloFivePadClient.RunnerCore
                                 string.Join(", ", arguments.Select(a => $"{a.Name} = {a.Value}"))
                                 );
 
-                            #warning this should indicate the result of the action!
-                            bot.InvokeAction(linkage.BotActionId, arguments);
-                            LinkagePerformed?.Invoke(this, new LinkagePerformedArgs(linkage));
+                            if (bot.InvokeAction(linkage.BotActionId, arguments))
+                            {
+                                LinkagePerformed?.Invoke(this, new LinkagePerformedArgs(linkage));
+                            }
                         }
                     }
                 }
@@ -112,32 +122,32 @@ namespace ModuloFivePadClient.RunnerCore
                 {
                     // if (null != cfgLinkage.TriggerState)
                     // {
-                        var newLinkage = new RunnerLinkage(cfgLinkage);
-                        _runnerLinkages.Add(newLinkage);
-                        if (newLinkage.Invalid)
-                        {
-                            break;
-                        }
+                    var newLinkage = new RunnerLinkage(cfgLinkage);
+                    _runnerLinkages.Add(newLinkage);
+                    if (newLinkage.Invalid)
+                    {
+                        break;
+                    }
 
-                        foreach (var argument in cfgLinkage.Arguments ?? [])
+                    foreach (var argument in cfgLinkage.Arguments ?? [])
+                    {
+                        var newArgument = RunnerLinkageArgument.From(argument);
+                        if (!newArgument.Invalid)
                         {
-                            var newArgument = new RunnerLinkageArgument(argument);
-                            if (!newArgument.Invalid)
-                            {
-                                // Invoke the action with as many arguments as we can.
-                                newLinkage.Arguments.Add(newArgument);
-                            }
+                            // Invoke the action with as many arguments as we can.
+                            newLinkage.Arguments.Add(newArgument);
                         }
+                    }
 
-                        _logger.LogDebug(
-                            "In {class}.{LoadConfiguration}, loaded linkage bot {botName} action {actionName} with {argCount} arguments {args}.",
-                            nameof(Runner),
-                            nameof(SwitchStateChanged),
-                            cfgLinkage.BotName,
-                            cfgLinkage.BotActionId,
-                            cfgLinkage.Arguments?.Length ?? 0,
-                            string.Join(", ", cfgLinkage?.Arguments?.Select(a => $"{a.Name} = {a.Value}") ?? [])
-                        );
+                    _logger.LogDebug(
+                        "In {class}.{LoadConfiguration}, loaded linkage bot {botName} action {actionName} with {argCount} arguments {args}.",
+                        nameof(Runner),
+                        nameof(SwitchStateChanged),
+                        cfgLinkage.BotName,
+                        cfgLinkage.BotActionId,
+                        cfgLinkage.Arguments?.Length ?? 0,
+                        string.Join(", ", cfgLinkage?.Arguments?.Select(a => $"{a.Name} = {a.Value}") ?? [])
+                    );
                     // }
                 }
             }

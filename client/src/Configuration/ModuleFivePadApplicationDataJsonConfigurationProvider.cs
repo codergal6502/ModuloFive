@@ -104,9 +104,9 @@ namespace ModuloFivePadClient.Configuration
 
                 foreach (var action in bot.BotActions)
                 {
-                    if (string.IsNullOrWhiteSpace(action.Identifier))
+                    if (string.IsNullOrWhiteSpace(action.BotActionId))
                     {
-                        throw new ModuloFiveConfigurationException($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.BotAction)}.{nameof(ModuloFiveConfiguration.BotAction.Identifier)} is invalid.");
+                        throw new ModuloFiveConfigurationException($"Configuration with null, empty, or whitespace {nameof(ModuloFiveConfiguration.BotAction)}.{nameof(ModuloFiveConfiguration.BotAction.BotActionId)} is invalid.");
                     }
 
                     if (string.IsNullOrWhiteSpace(action.Name))
